@@ -19,58 +19,57 @@ class ValidatePhoneSendOTP(APIView):
             phone = str(tel_num)
             user = User.objects.filter(phone__iexact=phone)
             if user.exists():
+                old = PhoneOTP.objects.filter(phone__iexact=phone)
+                if old.exists():
+                    old = old.first()
+                    # если прошли сутки то обновляем до 0 count в PhoneOTP
+                    # то есть надо запоминать когда был запрос и сохранять в бд PhoneOTP
+
+            key = send_otp(phone)
+            if key:
+                old = PhoneOTP.objects.filter(phone__iexact=phone)
+                if old.exists():
+                    old = old.first()
+                    count = old.count
+                    if count > 10:
+                        return Response({
+                            'ok': False,
+                            'error_code': 403,
+                            'description': "It's too many attempts, connect with support"
+                        })
+                    old.count = count + 1
+                    old.otp = key
+                    old.save()
+                    print('увеличение значения', count)
+                    return Response({
+                        'ok': True,
+                        'error_code': 200,
+                        'description': "We send sms",
+                        'phone': phone,
+                        'sms_for_tests': key
+                    })
+                else:
+                    PhoneOTP.objects.create(phone=phone, otp=key, )
+                    return Response({
+                        'ok': True,
+                        'error_code': 200,
+                        'description': "We send sms",
+                        'phone': phone,
+                        'sms_for_tests': key
+                    })
+            else:
                 return Response({
                     'ok': False,
-                    'error_code': 409,
-                    'description': 'Number is exist'
+                    'error_code': 404,
+                    'description': "We can't send sms, please, connect with support"
                 })
-            else:
-                key = send_otp(phone)
-                if key:
-                    old = PhoneOTP.objects.filter(phone__iexact=phone)
-                    if old.exists():
-                        old = old.first()
-                        count = old.count
-                        if count > 10:
-                            return Response({
-                                'ok': False,
-                                'error_code': 403,
-                                'description': "It's too many attempts, connect with support"
-                            })
-                        old.count = count + 1
-                        old.save()
-                        print('увеличение значения', count)
-                        return Response({
-                            'ok': True,
-                            'error_code': 200,
-                            'description': "We send sms",
-                            'sms_for_tests': key
-                        })
-                    else:
-                        PhoneOTP.objects.create(
-                            phone=phone,
-                            otp=key,
-                        )
-                        return Response({
-                            'ok': True,
-                            'error_code': 200,
-                            'description': "We send sms",
-                            'sms_for_tests': key
-                        })
-                else:
-                    return Response({
-                        'ok': False,
-                        'error_code': 404,
-                        'description': "We can't send sms, please, connect with support"
-                    })
-
-
         else:
             return Response({
                 'ok': False,
                 'error_code': 404,
                 'description': "We can't send sms, please, connect with support"
             })
+
 
 def send_otp(phone):
     if phone:
@@ -97,6 +96,9 @@ class ValidateOTP(APIView):
                 if str(otp_sent) == str(otp):
                     old.validated = True
                     old.save()
+                    # сгенерировать пароль
+                    # создать клиента
+                    # выдать ответ с ид, номером и т д
                     return Response({
                         'ok': True,
                         'error_code': 200,
@@ -114,7 +116,7 @@ class ValidateOTP(APIView):
                 Response({
                     'ok': False,
                     'error_code': 404,
-                    'description': "At first go to */api/v1/clients/validate_phone/"
+                    'description': "At first go to /api/v1/clients/validate_phone/"
                 })
 
         else:
@@ -146,27 +148,32 @@ class Register(APIView):
                     user = serializer.save()
                     user.set_password(password)
                     user.save()
-                    old.delete()
+                    old.delete() # TODO
                     return Response({
-                        'status': True,
-                        'detail': 'Аккаунт создан'
+                        'ok': False,
+                        'error_code': 200,
+                        'description': "Client was created",
+                        'phone': phone
                     })
                 else:
                     return Response({
-                        'status': False,
-                        'detail': 'Проверочный код (OTP) не подтвержден. Сначала подтвердите.'
+                        'ok': False,
+                        'error_code': 452,
+                        'description': "Not validated, please go to /api/v1/clients/validate_otp/"
                     })
 
             else:
                 Response({
-                    'status': False,
-                    'detail': 'Пожалуйста, сначала проверьте телефон'
+                    'ok': False,
+                    'error_code': 452,
+                    'description': "No such phone, please go to /api/v1/clients/validate_phone/"
                 })
 
         else:
             Response({
-                'status': False,
-                'detail': 'Телефон и пароль не отправляются'
+                'ok': False,
+                'error_code': 452,
+                'description': "Phone and/or otp is null"
             })
 
 
