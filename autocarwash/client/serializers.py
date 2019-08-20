@@ -1,8 +1,26 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
-from .models import User
 
 User = get_user_model()
+
+
+class ClientDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'name', 'surname', 'patronymic', 'phone', 'email', 'birthday', )
+
+    # def to_representation(self, data):
+    #     instance = super(ClientDetailSerializer, self).to_representation(data)
+    #
+    #     instance['ok'] = True
+    #     if instance['birthday']:
+    #         instance['birthday'] = Client.format_date_to_unix(instance['birthday'])
+    #     if instance['registration_date']:
+    #         instance['registration_date'] = Client.format_date_to_unix(instance['registration_date'])
+    #     if instance['update_date']:
+    #         instance['update_date'] = Client.format_date_to_unix(instance['update_date'])
+    #
+    #     return instance
 
 
 class CreateUserSerializer(serializers.ModelSerializer):

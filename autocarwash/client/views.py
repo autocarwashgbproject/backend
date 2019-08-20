@@ -2,9 +2,10 @@ from django.shortcuts import render, get_object_or_404
 import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions, status, generics
+from rest_framework import status, generics, permissions
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from .models import User, PhoneOTP
-from .serializers import CreateUserSerializer, LoginSerializer, UserSerializer
+from .serializers import CreateUserSerializer, LoginSerializer, UserSerializer, ClientDetailSerializer
 import random
 from knox.views import LoginView as KnoxLoginView
 from knox.auth import TokenAuthentication
@@ -13,7 +14,7 @@ from rest_framework.authtoken.models import Token
 
 
 class ValidatePhoneSendOTP(APIView):
-
+    permission_classes = (AllowAny, )
     def post(self, request, *args, **kwargs):
         tel_num = request.data.get('phone')
         if tel_num:
@@ -85,7 +86,7 @@ class ValidateOTP(APIView):
     """
     Если вы получили проверочный код (otp), отправьте запрос по телефону, и вы будете перенаправлены для ввода пароля
     """
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (AllowAny, )
 
     def post(self, request, *args, **kwargs):
         phone = request.data.get('phone', False)
@@ -118,7 +119,11 @@ class ValidateOTP(APIView):
                         user.set_password(password)
                         user.save()
 
-                    token = Token.objects.create(user=user)
+                    auth_user = authenticate(phone=phone, password=user.password)
+
+                    token, _ = Token.objects.get_or_create(user=auth_user)
+
+                    print(token.key)
 
                     # выдать ответ с всеми данными
                     return Response({
@@ -149,6 +154,21 @@ class ValidateOTP(APIView):
                 'error_code': 452,
                 'description': "Phone and/or otp is null"
             })
+
+
+class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, )
+    queryset = User.objects.all()
+    serializer_class = ClientDetailSerializer
+
+
+    # def put(self, request, *args, **kwargs):
+    #     client = request.data
+    #
+    #     if client['birthday']:
+    #         client['birthday'] = User.format_date_to_base(date = client['birthday'])
+    #
+    #     return self.update(request, *args, **kwargs)
 
 
 class Register(APIView):
@@ -197,7 +217,7 @@ class Register(APIView):
 
 
 class LoginAPI(KnoxLoginView):
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (AllowAny, )
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
