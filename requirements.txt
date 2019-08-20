@@ -1,0 +1,16 @@
+asn1crypto==0.24.0
+certifi==2019.6.16
+cffi==1.12.3
+chardet==3.0.4
+cryptography==2.7
+Django==2.2.4
+django-rest-knox==4.1.0
+djangorestframework==3.10.2
+djangorestframework-stubs==1.0.0
+idna==2.8
+pycparser==2.19
+pytz==2019.2
+requests==2.22.0
+six==1.12.0
+sqlparse==0.3.0
+urllib3==1.25.3
