@@ -84,6 +84,8 @@ class ValidateOTP(APIView):
     """
     Если вы получили проверочный код (otp), отправьте запрос по телефону, и вы будете перенаправлены для ввода пароля
     """
+    permission_classes = (permissions.AllowAny, )
+    
     def post(self, request, *args, **kwargs):
         phone = request.data.get('phone', False)
         otp_sent = request.data.get('otp', False)
@@ -94,16 +96,56 @@ class ValidateOTP(APIView):
                 old = old.first()
                 otp = old.otp
                 if str(otp_sent) == str(otp):
-                    old.validated = True
-                    old.save()
-                    # сгенерировать пароль
-                    # создать клиента
-                    # выдать ответ с ид, номером и т д
-                    return Response({
-                        'ok': True,
-                        'error_code': 200,
-                        'description': "Next step is registration"
-                    })
+                    old.delete()
+                    user = User.objects.filter(phone__iexact=phone)
+                    if user.exists():
+
+                        # логин
+                        # serializer = LoginSerializer(data=request.data)
+                        # serializer.is_valid(raise_exception=True)
+                        # user = serializer.validated_data['user']
+                        # login(request, user)
+                        # return super().post(request, format=None)
+
+                        # token ?
+                        return Response({
+                            'ok': True,
+                            'token': token,
+                            'id_client': user.id,
+                            'is_registered': "true",
+                            'phone': phone
+                        })
+                    else:
+                        print()
+                        # сгенерировать пароль
+                        password = 'password'
+                        print(password)
+                        print()
+                        # создать клиента
+                        temp_data = {
+                            'phone': phone,
+                            'password': password
+                        }
+                        serializer = CreateUserSerializer(data=temp_data)
+                        serializer.is_valid(raise_exception=True)
+                        user = serializer.save()
+                        user.set_password(password)
+                        user.save()
+
+                        # логин
+                        # serializer = LoginSerializer(data=request.data)
+                        # serializer.is_valid(raise_exception=True)
+                        # user = serializer.validated_data['user']
+                        # login(request, user)
+                        # return super().post(request, format=None)
+
+                        # выдать ответ с ид, номером и т д
+                        return Response({
+                            'ok': True,
+                            'id_client': user.id,
+                            'is_registered': False,
+                            'phone': phone
+                        })
 
                 else:
                     return Response({
@@ -149,12 +191,7 @@ class Register(APIView):
                     user.set_password(password)
                     user.save()
                     old.delete() # TODO
-                    return Response({
-                        'ok': False,
-                        'error_code': 200,
-                        'description': "Client was created",
-                        'phone': phone
-                    })
+
                 else:
                     return Response({
                         'ok': False,
