@@ -9,6 +9,7 @@ import random
 from knox.views import LoginView as KnoxLoginView
 from knox.auth import TokenAuthentication
 from django.contrib.auth import login
+from rest_framework.authtoken.models import Token
 
 
 class ValidatePhoneSendOTP(APIView):
@@ -85,7 +86,7 @@ class ValidateOTP(APIView):
     Если вы получили проверочный код (otp), отправьте запрос по телефону, и вы будете перенаправлены для ввода пароля
     """
     permission_classes = (permissions.AllowAny, )
-    
+
     def post(self, request, *args, **kwargs):
         phone = request.data.get('phone', False)
         otp_sent = request.data.get('otp', False)
@@ -99,22 +100,7 @@ class ValidateOTP(APIView):
                     old.delete()
                     user = User.objects.filter(phone__iexact=phone)
                     if user.exists():
-
-                        # логин
-                        # serializer = LoginSerializer(data=request.data)
-                        # serializer.is_valid(raise_exception=True)
-                        # user = serializer.validated_data['user']
-                        # login(request, user)
-                        # return super().post(request, format=None)
-
-                        # token ?
-                        return Response({
-                            'ok': True,
-                            'token': token,
-                            'id_client': user.id,
-                            'is_registered': "true",
-                            'phone': phone
-                        })
+                        pass
                     else:
                         print()
                         # сгенерировать пароль
@@ -132,20 +118,16 @@ class ValidateOTP(APIView):
                         user.set_password(password)
                         user.save()
 
-                        # логин
-                        # serializer = LoginSerializer(data=request.data)
-                        # serializer.is_valid(raise_exception=True)
-                        # user = serializer.validated_data['user']
-                        # login(request, user)
-                        # return super().post(request, format=None)
+                    token = Token.objects.create(user=user)
 
-                        # выдать ответ с ид, номером и т д
-                        return Response({
-                            'ok': True,
-                            'id_client': user.id,
-                            'is_registered': False,
-                            'phone': phone
-                        })
+                    # выдать ответ с всеми данными
+                    return Response({
+                        'ok': True,
+                        'id_client': user.id,
+                        'is_registered': False,
+                        'phone': phone,
+                        'token': token.key
+                    })
 
                 else:
                     return Response({
@@ -217,9 +199,9 @@ class Register(APIView):
 class LoginAPI(KnoxLoginView):
     permission_classes = (permissions.AllowAny, )
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         login(request, user)
-        return super().post(request, format=None)
+        return super().post(request)
