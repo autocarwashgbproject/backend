@@ -20,8 +20,9 @@ class ValidatePhoneSendOTP(APIView):
             user = User.objects.filter(phone__iexact=phone)
             if user.exists():
                 return Response({
-                    'status': False,
-                    'detail': 'Номер телефона уже существует'
+                    'ok': False,
+                    'error_code': 409,
+                    'description': 'Number is exist'
                 })
             else:
                 key = send_otp(phone)
@@ -32,15 +33,18 @@ class ValidatePhoneSendOTP(APIView):
                         count = old.count
                         if count > 10:
                             return Response({
-                                'status': False,
-                                'detail': 'Ошибка отправки проверочного кода. Превышен лимит, обратитесь в поддержку'
+                                'ok': False,
+                                'error_code': 403,
+                                'description': "It's too many attempts, connect with support"
                             })
                         old.count = count + 1
                         old.save()
                         print('увеличение значения', count)
                         return Response({
-                            'status': True,
-                            'detail': 'Проверочный код успешно отправлен'
+                            'ok': True,
+                            'error_code': 200,
+                            'description': "We send sms",
+                            'sms_for_tests': key
                         })
                     else:
                         PhoneOTP.objects.create(
@@ -48,22 +52,25 @@ class ValidatePhoneSendOTP(APIView):
                             otp=key,
                         )
                         return Response({
-                            'status': True,
-                            'detail': 'Проверочный код успешно отправлен'
+                            'ok': True,
+                            'error_code': 200,
+                            'description': "We send sms",
+                            'sms_for_tests': key
                         })
                 else:
                     return Response({
-                        'status': False,
-                        'detail': 'Ошибка отправки проверочного кода'
+                        'ok': False,
+                        'error_code': 404,
+                        'description': "We can't send sms, please, connect with support"
                     })
 
 
         else:
             return Response({
-                'status': False,
-                'detail': 'Номер телефона не указан в запросе'
+                'ok': False,
+                'error_code': 404,
+                'description': "We can't send sms, please, connect with support"
             })
-
 
 def send_otp(phone):
     if phone:
@@ -91,26 +98,30 @@ class ValidateOTP(APIView):
                     old.validated = True
                     old.save()
                     return Response({
-                        'status': True,
-                        'detail': 'Проверочный код (OTP) совпал. Пожалуйста, перейдите к регистрации'
+                        'ok': True,
+                        'error_code': 200,
+                        'description': "Next step is registration"
                     })
 
                 else:
                     return Response({
-                        'status': False,
-                        'detail': 'Проверочный код (OTP) не верный'
+                        'ok': False,
+                        'error_code': 452,
+                        'description': "Wrong otp"
                     })
 
             else:
                 Response({
-                    'status': False,
-                    'detail': 'Сначала выполните отправку запроса проверочного кода (OTP)'
+                    'ok': False,
+                    'error_code': 404,
+                    'description': "At first go to */api/v1/clients/validate_phone/"
                 })
 
         else:
             Response({
-                'status': False,
-                'detail': 'Пожалуйста, предоставьте номер телефон, а также проверочный код (otp) для проверки'
+                'ok': False,
+                'error_code': 452,
+                'description': "Phone and/or otp is null"
             })
 
 

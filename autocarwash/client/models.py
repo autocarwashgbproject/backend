@@ -58,11 +58,17 @@ class User(AbstractBaseUser):
     )
     phone = models.CharField(validators=[phone_regex], max_length=15, unique=True)
     name = models.CharField(max_length=20, blank=True, null=True)
+    surname = models.CharField(max_length=20, blank=True, null=True)
+    patronymic = models.CharField(verbose_name='Отчество', max_length=45, blank=True, null=True)
+    birthday = models.DateField(verbose_name='День рождения', null=True)
+    email = models.EmailField(verbose_name='E-mail', blank=True, null=True)
     first_login = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
+    delete_date = models.DateTimeField(verbose_name='Удален', null=True)
 
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = []
@@ -118,6 +124,3 @@ class PhoneOTP(models.Model):
 
     def __str__(self):
         return str(self.phone) + ' is sent ' + str(self.otp)
-
-
-
