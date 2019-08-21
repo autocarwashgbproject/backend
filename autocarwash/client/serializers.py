@@ -7,7 +7,7 @@ User = get_user_model()
 class ClientDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'name', 'surname', 'patronymic', 'phone', 'email', 'birthday', )
+        fields = ('id', 'name', 'surname', 'patronymic', 'phone', 'email', 'birthday', 'password' )
 
     # def to_representation(self, data):
     #     instance = super(ClientDetailSerializer, self).to_representation(data)

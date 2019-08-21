@@ -10,6 +10,7 @@ from knox.views import LoginView as KnoxLoginView
 from knox.auth import TokenAuthentication
 from django.contrib.auth import login
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken import serializers
 
 
 class ValidatePhoneSendOTP(APIView):
@@ -23,8 +24,7 @@ class ValidatePhoneSendOTP(APIView):
                 old = PhoneOTP.objects.filter(phone__iexact=phone)
                 if old.exists():
                     old = old.first()
-                    # если прошли сутки то обновляем до 0 count в PhoneOTP
-                    # то есть надо запоминать когда был запрос и сохранять в бд PhoneOTP
+
 
             key = send_otp(phone)
             if key:
@@ -97,10 +97,22 @@ class ValidateOTP(APIView):
                 old = old.first()
                 otp = old.otp
                 if str(otp_sent) == str(otp):
-                    old.delete()
+
                     user = User.objects.filter(phone__iexact=phone)
+
+
                     if user.exists():
-                        user.first()
+
+                        password = 'password'
+                        temp_data = {
+                            'username': phone,
+                            'password': password
+                        }
+                        serializer = serializers.AuthTokenSerializer(data=temp_data)
+                        serializer.is_valid(raise_exception=True)
+                        user = serializer.validated_data['user']
+                        token, created = Token.objects.get_or_create(user=user)
+
                     else:
                         print()
                         # сгенерировать пароль
@@ -118,8 +130,11 @@ class ValidateOTP(APIView):
                         user.set_password(password)
                         user.save()
 
-                    token, _ = Token.objects.get_or_create(user=user)
-
+                        token = Token.objects.create(user=user)
+                    print()
+                    print(token.key)
+                    print()
+                    old.delete()
                     # выдать ответ с всеми данными
                     return Response({
                         'ok': True,
