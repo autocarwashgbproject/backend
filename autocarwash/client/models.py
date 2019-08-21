@@ -54,13 +54,13 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     phone_regex = RegexValidator(
-        regex=r'^\+?1?\d{9,14}$',
+        regex=r'^\+?1?\d{9,14}$', # TODO
         message='Номер телефона необходимо вводить в формате: «+79031234567». Допускается до 14 цифр.'
     )
     phone = models.CharField(validators=[phone_regex], max_length=15, unique=True)
     name = models.CharField(max_length=20, blank=True, null=True)
     surname = models.CharField(max_length=20, blank=True, null=True)
-    patronymic = models.CharField(verbose_name='Отчество', max_length=45, blank=True, null=True)
+    patronymic = models.CharField(verbose_name='Отчество', max_length=20, blank=True, null=True)
     birthday = models.DateField(verbose_name='День рождения', null=True)
     email = models.EmailField(verbose_name='E-mail', blank=True, null=True)
     first_login = models.BooleanField(default=False)
