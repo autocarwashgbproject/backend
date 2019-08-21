@@ -5,6 +5,10 @@ User = get_user_model()
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
+    # created_by = serializers.ReadOnlyField(source='created_by.username')
+    # reviews = ReviewSerializer(many=True, read_only=True)
+    
+
     class Meta:
         model = User
         fields = ('id', 'phone', 'name', 'surname', 'patronymic', 'email', 'birthday', 'timestamp', 'update_date', )

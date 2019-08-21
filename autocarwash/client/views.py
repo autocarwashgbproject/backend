@@ -43,7 +43,6 @@ class ValidatePhoneSendOTP(APIView):
                     old.count = count + 1
                     old.otp = key
                     old.save()
-                    print('увеличение значения', count)
                     return Response({
                         'ok': True,
                         'error_code': 200,
@@ -77,7 +76,6 @@ class ValidatePhoneSendOTP(APIView):
 def send_otp(phone):
     if phone:
         key = random.randint(999, 9999)
-        print(key)
         return key
     else:
         return False
@@ -164,8 +162,15 @@ class ValidateOTP(APIView):
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (TokenAuthentication, )
     permissoin_classes = (permissions.IsAuthenticated, )
-    queryset = User.objects.all()
+    model = User
+    queryset = User.objects.all() # TODO сделать фильтр по пк
     serializer_class = UserDetailSerializer
+    # slug_field = 'serial'
+    # slug_url_kwarg = 'serial'
+    # lookup_url_kwarg = 'review_id'
+    # def get_queryset(self):
+    #     review = self.kwargs['review_id']
+    #     return Review.objects.filter(id=review)
 
 
     def put(self, request, *args, **kwargs):
@@ -183,7 +188,20 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         return self.update(request, *args, **kwargs)
 
-    # переназначить delete
+    def delete(self, request, *args, **kwargs):
+        # TODO что то сделать с клиентом
+        client = request.data
+        pk = kwargs['pk']
+
+        user = User.objects.filter(id=pk)
+        user = user.first()
+        token = Token.objects.filter(user=user)
+        token_first = token.first()
+        token_first.delete()
+
+        return self.destroy(request, *args, **kwargs)
+
+
 
 class LogoutView(APIView):
     authentication_classes = (TokenAuthentication, )
