@@ -167,6 +167,13 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
         client = request.data
 
         if client['birthday']:
-            client['birthday'] = User.format_date_to_base(date = client['birthday'])
+            try:
+                client['birthday'] = User.format_date_to_base(date = client['birthday'])
+            except Exception as e:
+                return Response({
+                    'ok': False,
+                    'error_code': 452,
+                    'description': "Wrong birthday format, expected Unixtime"
+                })
 
         return self.update(request, *args, **kwargs)
