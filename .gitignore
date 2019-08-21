@@ -130,4 +130,7 @@ dmypy.json
 .idea/modules.xml
 .idea/otp_auth.iml
 .idea/workspace.xml
+.idea
 templates/
+.idea/backend_carwash.iml
+.idea/vcs.xml

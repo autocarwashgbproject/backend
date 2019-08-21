@@ -21,4 +21,5 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/clients/', include('client.urls', namespace='client')),
+    path('api/v1/cars/', include('cars.urls', namespace='cars')),
 ]
