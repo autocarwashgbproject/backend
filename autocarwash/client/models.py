@@ -9,6 +9,7 @@ from rest_framework.authtoken.models import Token
 import random
 import os
 import requests
+from datetime import datetime
 
 # User.object.create_user(phone='123123123123', password='123hjk8gcn')
 
@@ -75,6 +76,25 @@ class User(AbstractBaseUser):
 
     objects = UserManager()
 
+    # конвертируем дату в формат unix
+    def format_date_to_unix(date):
+        try:
+            datet = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+        except:
+            datet = datetime.strptime(date, '%Y-%m-%d')
+
+        timestamp = (datet - datetime(1970, 1, 1)).total_seconds()
+
+        return int(timestamp)
+
+    # конвертируем дату в формат бд
+    def format_date_to_base(date):
+        # ISO 8601
+        datet = datetime.fromtimestamp(date)
+        date = datet.strftime('%Y-%m-%d')
+
+        return date
+
     def __str__(self):
         return self.phone
 
@@ -114,10 +134,7 @@ class PhoneOTP(models.Model):
     phone = models.CharField(validators=[phone_regex], max_length=15, unique=True)
     otp = models.CharField(max_length=9, blank=True, null=True)
     count = models.IntegerField(default=0, help_text='Количетсво отправленных кодов проверки')
-    validated = models.BooleanField(
-        default=False,
-        help_text='Если это правда, то означает, что пользователь должен правильно проверить otp во втором API'
-    )
+
     # logged = models.BooleanField(default=False, help_text='Если проверка кодов прошла успешно')
     # forgot = models.BooleanField(default=False, help_text='Верно только для забытого пароля')
     # forgot_logged = models.BooleanField(default=False, help_text='only true if validate otp forgot get successful')

@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status, generics
 from .models import User, PhoneOTP
-from .serializers import CreateUserSerializer, LoginSerializer, UserSerializer, ClientDetailSerializer
+from .serializers import CreateUserSerializer, UserDetailSerializer
 import random
 from knox.views import LoginView as KnoxLoginView
 from knox.auth import TokenAuthentication
@@ -97,53 +97,44 @@ class ValidateOTP(APIView):
                 old = old.first()
                 otp = old.otp
                 if str(otp_sent) == str(otp):
-
+                    old.delete()
                     user = User.objects.filter(phone__iexact=phone)
-
-
                     if user.exists():
-
-                        password = 'password'
                         temp_data = {
                             'username': phone,
-                            'password': password
+                            'password': 'password'
                         }
                         serializer = serializers.AuthTokenSerializer(data=temp_data)
                         serializer.is_valid(raise_exception=True)
                         user = serializer.validated_data['user']
                         token, created = Token.objects.get_or_create(user=user)
 
+                        return Response({
+                            'ok': True,
+                            'id_client': user.id,
+                            'is_registered': True,
+                            'phone': phone,
+                            'token': token.key
+                        })
                     else:
-                        print()
-                        # сгенерировать пароль
-                        password = 'password'
-                        print(password)
-                        print()
-                        # создать клиента
                         temp_data = {
                             'phone': phone,
-                            'password': password
+                            'password': 'password'
                         }
                         serializer = CreateUserSerializer(data=temp_data)
                         serializer.is_valid(raise_exception=True)
                         user = serializer.save()
                         user.set_password(password)
                         user.save()
-
                         token = Token.objects.create(user=user)
-                    print()
-                    print(token.key)
-                    print()
-                    old.delete()
-                    # выдать ответ с всеми данными
-                    return Response({
-                        'ok': True,
-                        'id_client': user.id,
-                        'is_registered': False,
-                        'phone': phone,
-                        'token': token.key
-                    })
 
+                        return Response({
+                            'ok': True,
+                            'id_client': user.id,
+                            'is_registered': False,
+                            'phone': phone,
+                            'token': token.key
+                        })
                 else:
                     return Response({
                         'ok': False,
@@ -155,7 +146,7 @@ class ValidateOTP(APIView):
                 Response({
                     'ok': False,
                     'error_code': 404,
-                    'description': "At first go to /api/v1/clients/validate_phone/"
+                    'description': "At first go to /api/v1/clients/get_sms/"
                 })
 
         else:
@@ -167,71 +158,15 @@ class ValidateOTP(APIView):
 
 
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permissoin_classes = (permissions.IsAdminUser, permissions.IsAuthenticated)
+    permissoin_classes = (permissions.IsAuthenticated, )
     queryset = User.objects.all()
-    serializer_class = ClientDetailSerializer
+    serializer_class = UserDetailSerializer
 
 
-    # def put(self, request, *args, **kwargs):
-    #     client = request.data
-    #
-    #     if client['birthday']:
-    #         client['birthday'] = User.format_date_to_base(date = client['birthday'])
-    #
-    #     return self.update(request, *args, **kwargs)
+    def put(self, request, *args, **kwargs):
+        client = request.data
 
+        if client['birthday']:
+            client['birthday'] = User.format_date_to_base(date = client['birthday'])
 
-class Register(APIView):
-    def post(self, request, *args, **kwargs):
-        phone = request.data.get('phone', False)
-        password = request.data.get('password', False)
-
-        if phone and password:
-            old = PhoneOTP.objects.filter(phone__iexact=phone)
-            if old.exists():
-                old = old.first()
-                validated = old.validated
-
-                if validated:
-                    temp_data = {
-                        'phone': phone,
-                        'password': password
-                    }
-                    serializer = CreateUserSerializer(data=temp_data)
-                    serializer.is_valid(raise_exception=True)
-                    user = serializer.save()
-                    user.set_password(password)
-                    user.save()
-                    old.delete() # TODO
-
-                else:
-                    return Response({
-                        'ok': False,
-                        'error_code': 452,
-                        'description': "Not validated, please go to /api/v1/clients/validate_otp/"
-                    })
-
-            else:
-                Response({
-                    'ok': False,
-                    'error_code': 452,
-                    'description': "No such phone, please go to /api/v1/clients/validate_phone/"
-                })
-
-        else:
-            Response({
-                'ok': False,
-                'error_code': 452,
-                'description': "Phone and/or otp is null"
-            })
-
-
-class LoginAPI(KnoxLoginView):
-    permission_classes = (permissions.AllowAny, )
-
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        login(request, user)
-        return super().post(request)
+        return self.update(request, *args, **kwargs)
