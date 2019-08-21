@@ -11,9 +11,11 @@ from knox.auth import TokenAuthentication
 from django.contrib.auth import login
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken import serializers
+from rest_framework.authentication import TokenAuthentication
 
 
 class ValidatePhoneSendOTP(APIView):
+    permission_classes = (permissions.AllowAny, )
 
     def post(self, request, *args, **kwargs):
         tel_num = request.data.get('phone')
@@ -91,6 +93,7 @@ class ValidateOTP(APIView):
         phone = request.data.get('phone', False)
         otp_sent = request.data.get('otp', False)
 
+
         if phone and otp_sent:
             old = PhoneOTP.objects.filter(phone__iexact=phone)
             if old.exists():
@@ -99,10 +102,11 @@ class ValidateOTP(APIView):
                 if str(otp_sent) == str(otp):
                     old.delete()
                     user = User.objects.filter(phone__iexact=phone)
+                    password = 'password'
                     if user.exists():
                         temp_data = {
                             'username': phone,
-                            'password': 'password'
+                            'password': password
                         }
                         serializer = serializers.AuthTokenSerializer(data=temp_data)
                         serializer.is_valid(raise_exception=True)
@@ -119,7 +123,7 @@ class ValidateOTP(APIView):
                     else:
                         temp_data = {
                             'phone': phone,
-                            'password': 'password'
+                            'password': password
                         }
                         serializer = CreateUserSerializer(data=temp_data)
                         serializer.is_valid(raise_exception=True)
@@ -158,6 +162,7 @@ class ValidateOTP(APIView):
 
 
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = (TokenAuthentication, )
     permissoin_classes = (permissions.IsAuthenticated, )
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
@@ -177,3 +182,24 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
                 })
 
         return self.update(request, *args, **kwargs)
+
+    # переназначить delete
+
+class LogoutView(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def post(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        user = User.objects.filter(id=pk)
+        user = user.first()
+        token = Token.objects.filter(user=user)
+        token_first = token.first()
+        token_first.delete()
+
+
+        return Response({
+            'ok': True,
+            'id_client': user.id,
+            'description': "Token was remove"
+        })
