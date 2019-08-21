@@ -2,8 +2,7 @@ from django.shortcuts import render, get_object_or_404
 import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, generics, permissions
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework import permissions, status, generics
 from .models import User, PhoneOTP
 from .serializers import CreateUserSerializer, LoginSerializer, UserSerializer, ClientDetailSerializer
 import random
@@ -14,7 +13,7 @@ from rest_framework.authtoken.models import Token
 
 
 class ValidatePhoneSendOTP(APIView):
-    permission_classes = (AllowAny, )
+
     def post(self, request, *args, **kwargs):
         tel_num = request.data.get('phone')
         if tel_num:
@@ -86,7 +85,7 @@ class ValidateOTP(APIView):
     """
     Если вы получили проверочный код (otp), отправьте запрос по телефону, и вы будете перенаправлены для ввода пароля
     """
-    permission_classes = (AllowAny, )
+    permission_classes = (permissions.AllowAny, )
 
     def post(self, request, *args, **kwargs):
         phone = request.data.get('phone', False)
@@ -101,7 +100,7 @@ class ValidateOTP(APIView):
                     old.delete()
                     user = User.objects.filter(phone__iexact=phone)
                     if user.exists():
-                        pass
+                        user.first()
                     else:
                         print()
                         # сгенерировать пароль
@@ -119,11 +118,7 @@ class ValidateOTP(APIView):
                         user.set_password(password)
                         user.save()
 
-                    auth_user = authenticate(phone=phone, password=user.password)
-
-                    token, _ = Token.objects.get_or_create(user=auth_user)
-
-                    print(token.key)
+                    token, _ = Token.objects.get_or_create(user=user)
 
                     # выдать ответ с всеми данными
                     return Response({
@@ -157,7 +152,7 @@ class ValidateOTP(APIView):
 
 
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated, )
+    permissoin_classes = (permissions.IsAdminUser, permissions.IsAuthenticated)
     queryset = User.objects.all()
     serializer_class = ClientDetailSerializer
 
@@ -217,7 +212,7 @@ class Register(APIView):
 
 
 class LoginAPI(KnoxLoginView):
-    permission_classes = (AllowAny, )
+    permission_classes = (permissions.AllowAny, )
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
