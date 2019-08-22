@@ -45,19 +45,15 @@ class ValidatePhoneSendOTP(APIView):
                     old.save()
                     return Response({
                         'ok': True,
-                        'error_code': 200,
-                        'description': "We send sms",
-                        'phone': phone,
-                        'sms_for_tests': key
+                        'phone': int(phone),
+                        'sms_for_tests': int(key)
                     })
                 else:
                     PhoneOTP.objects.create(phone=phone, otp=key, )
                     return Response({
                         'ok': True,
-                        'error_code': 200,
-                        'description': "We send sms",
-                        'phone': phone,
-                        'sms_for_tests': key
+                        'phone': int(phone),
+                        'sms_for_tests': int(key)
                     })
             else:
                 return Response({
@@ -113,14 +109,14 @@ class ValidateOTP(APIView):
 
                         return Response({
                             'ok': True,
-                            'id_client': user.id,
+                            'id_client': int(user.id),
                             'is_registered': True,
-                            'phone': phone,
+                            'phone': int(phone),
                             'token': token.key
                         })
                     else:
                         temp_data = {
-                            'phone': phone,
+                            'phone': int(phone),
                             'password': password
                         }
                         serializer = CreateUserSerializer(data=temp_data)
@@ -132,9 +128,9 @@ class ValidateOTP(APIView):
 
                         return Response({
                             'ok': True,
-                            'id_client': user.id,
+                            'id_client': int(user.id),
                             'is_registered': False,
-                            'phone': phone,
+                            'phone': int(phone),
                             'token': token.key
                         })
                 else:
@@ -218,6 +214,6 @@ class LogoutView(APIView):
 
         return Response({
             'ok': True,
-            'id_client': user.id,
+            'id_client': int(user.id),
             'description': "Token was remove"
         })

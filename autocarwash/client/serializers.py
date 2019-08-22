@@ -7,7 +7,7 @@ User = get_user_model()
 class UserDetailSerializer(serializers.ModelSerializer):
     # created_by = serializers.ReadOnlyField(source='created_by.username')
     # reviews = ReviewSerializer(many=True, read_only=True)
-    
+
 
     class Meta:
         model = User
@@ -38,3 +38,11 @@ class CreateUserSerializer(serializers.ModelSerializer):
         def create(self, validated_data):
             user = User.objects.create(**validated_data)
             return user
+
+        def to_representation(self, data):
+            instance = super(UserDetailSerializer, self).to_representation(data)
+
+            instance['phone'] = int(instance['phone'])
+            instance['ok'] = True
+
+            return instance
