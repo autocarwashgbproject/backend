@@ -19,5 +19,5 @@ class CarsListView(generics.ListAPIView):  # Вьюха просмотра вс�
 class CarsDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха просмотра деталей по одной машине
     serializer_class = CarDetailSerializer
     queryset = Car.objects.all()
-    permission_classes = (IsOwnerOrReadOnly, )  # Изменять объект может только пользователь и админ
+    permission_classes = (IsOwnerOrReadOnly, IsAuthenticated, )  # Изменять объект может только пользователь и админ
 # IsOwnerOrReadOnly,

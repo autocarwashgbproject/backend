@@ -5,7 +5,7 @@ from cars.models import Car
 class CarsListSerializer(serializers.ModelSerializer):  # Список всех машин
     class Meta:
         model = Car
-        fields = ('id', 'car_num', 'user')
+        fields = ('id', 'reg_num', 'user')
 
 
 class CarDetailSerializer(serializers.ModelSerializer):  # Добавление машины
@@ -14,4 +14,3 @@ class CarDetailSerializer(serializers.ModelSerializer):  # Добавление 
     class Meta:
         model = Car
         fields = '__all__'
-
