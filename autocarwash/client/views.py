@@ -6,8 +6,6 @@ from rest_framework import permissions, status, generics
 from .models import User, PhoneOTP
 from .serializers import CreateUserSerializer, UserDetailSerializer
 import random
-from knox.views import LoginView as KnoxLoginView
-from knox.auth import TokenAuthentication
 from django.contrib.auth import login
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken import serializers
@@ -159,7 +157,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (TokenAuthentication, )
     permissoin_classes = (permissions.IsAuthenticated, )
     model = User
-    queryset = User.objects.all() # TODO сделать фильтр по пк
+    queryset = User.objects.all()
     serializer_class = UserDetailSerializer
     # slug_field = 'serial'
     # slug_url_kwarg = 'serial'
@@ -172,7 +170,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         client = request.data
 
-        if client['birthday']:
+        if client['is_birthday'] == True:
             try:
                 client['birthday'] = User.format_date_to_base(date = client['birthday'])
             except Exception as e:
@@ -181,6 +179,8 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
                     'error_code': 452,
                     'description': "Wrong birthday format, expected Unixtime"
                 })
+        else:
+            client['birthday'] = None
 
         return self.update(request, *args, **kwargs)
 

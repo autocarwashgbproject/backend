@@ -1,5 +1,4 @@
 from django.urls import path, include
-from knox import views as knox_views
 from .views import ValidatePhoneSendOTP, ValidateOTP, ClientDetailView, LogoutView
 
 app_name = 'client'
