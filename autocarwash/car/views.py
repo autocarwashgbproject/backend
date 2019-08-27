@@ -4,6 +4,7 @@ from .models import Car
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import TokenAuthentication  # Неактивно, так как подключено в настройках
+from rest_framework.response import Response
 
 
 class CarCreateView(generics.CreateAPIView):  # Вьюха создания машины
@@ -28,6 +29,7 @@ class CarDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха про
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
+        print(int(kwargs['pk']))
 
         return Response({
             'ok': True,
