@@ -1,5 +1,4 @@
 from django.db import models
-from car.models import Car
 # Create your models here.
 
 class City(models.Model):
@@ -20,7 +19,7 @@ class Wash(models.Model):
         verbose_name_plural = "Мойки"
 
     city = models.ForeignKey(City, verbose_name='Город', on_delete=models.CASCADE)
-    adress = models.CharField(verbose_name='Город', unique=True, max_length=150)
+    adress = models.CharField(verbose_name='Адрес', unique=True, max_length=150)
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
@@ -39,7 +38,7 @@ class Subscription(models.Model):
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
     delete_date = models.DateTimeField(verbose_name='Удален', null=True)
 
-    def subscription_price(self, ):
+    def subscription_price(): # TODO
         pass
 
 
