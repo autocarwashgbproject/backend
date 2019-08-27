@@ -21,7 +21,7 @@ class Car(models.Model):
 def sub_date_plus_month(sub_date):
     pass
 
-class SubsCar(models.Model):
+class SubscriptionCar(models.Model):
     class Meta:
         verbose_name = 'Подписка автомобиля'
         verbose_name_plural = "Подписки автомобиля"
