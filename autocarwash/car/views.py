@@ -21,3 +21,16 @@ class CarDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха про
     serializer_class = CarDetailSerializer
     queryset = Car.objects.all()
     permission_classes = (IsOwnerOrReadOnly, IsAuthenticated, )  # Изменять объект может только пользователь и админ
+
+    def patch(self, request, *args, **kwargs):
+        pass
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        return Response({
+            'ok': True,
+            'id_car': int(kwargs['pk']),
+            'description': "Car was remove"
+        })

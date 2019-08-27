@@ -10,6 +10,7 @@ from django.contrib.auth import login
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken import serializers
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.mixins import DestroyModelMixin
 
 
 class ValidatePhoneSendOTP(APIView):
@@ -184,6 +185,9 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         return self.update(request, *args, **kwargs)
 
+    def patch(self, request, *args, **kwargs):
+        pass
+
     def delete(self, request, *args, **kwargs):
         # TODO что то сделать с клиентом
         client = request.data
@@ -197,6 +201,15 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         return self.destroy(request, *args, **kwargs)
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        return Response({
+            'ok': True,
+            'id_client': int(kwargs['pk']),
+            'description': "Client was remove"
+        })
 
 
 class LogoutView(APIView):
