@@ -5,7 +5,7 @@ from django.conf import settings
 User = get_user_model()
 
 
-class Car(models.Model): 
+class Car(models.Model):
     class Meta:
         verbose_name = 'Автомобиль'
         verbose_name_plural = "Автомобили"
@@ -13,7 +13,7 @@ class Car(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
     reg_num = models.CharField(verbose_name='Номер автомобиля', db_index=True, unique=True, max_length=9)
     is_active = models.BooleanField(default=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
     delete_date = models.DateTimeField(verbose_name='Удален', null=True)
 

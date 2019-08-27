@@ -67,7 +67,7 @@ class User(AbstractBaseUser):
     active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
     delete_date = models.DateTimeField(verbose_name='Удален', null=True)
 
