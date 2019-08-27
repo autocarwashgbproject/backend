@@ -39,6 +39,9 @@ class Subscription(models.Model):
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
     delete_date = models.DateTimeField(verbose_name='Удален', null=True)
 
+    def subscription_price(self, ):
+        pass
+
 
 class Sevice(models.Model):
     class Meta:
