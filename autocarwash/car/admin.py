@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Car, SubsCar
+from .models import Car, SubscriptionCar
 # Register your models here.
 admin.site.register(Car)
-admin.site.register(SubsCar)
+admin.site.register(SubscriptionCar)

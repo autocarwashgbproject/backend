@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status, generics
 from .models import User, PhoneOTP
+from car.models import Car
 from .serializers import CreateUserSerializer, UserDetailSerializer
 import random
 from django.contrib.auth import login
@@ -106,11 +107,15 @@ class ValidateOTP(APIView):
                         user = serializer.validated_data['user']
                         token, created = Token.objects.get_or_create(user=user)
 
+                        cars = Car.objects.filter(user=user)
+                        cars_id = [car.id for car in cars]
+
                         return Response({
                             'ok': True,
                             'id_client': int(user.id),
                             'is_registered': True,
                             'phone': int(phone),
+                            'cars_id': cars_id,
                             'token': token.key
                         })
                     else:
