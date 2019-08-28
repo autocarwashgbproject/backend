@@ -65,7 +65,7 @@ class ValidatePhoneSendOTP(APIView):
             return Response({
                 'ok': False,
                 'error_code': 404,
-                'description': "We can't send sms, please, connect with support"
+                'description': "We can't see a phone"
             })
 
 
