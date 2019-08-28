@@ -12,8 +12,6 @@ import requests
 from datetime import datetime
 
 # User.object.create_user(phone='123123123123', password='123hjk8gcn')
-
-
 class UserManager(BaseUserManager):
     def create_user(self, phone, password=None, is_staff=False, is_active=True, is_admin=False):
         if not phone:
