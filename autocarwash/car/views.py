@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 class CarCreateView(generics.CreateAPIView):  # Вьюха создания машины
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsOwner, )
     serializer_class = CarDetailSerializer
 
 
@@ -21,7 +21,7 @@ class CarListView(generics.ListAPIView):  # Вьюха просмотра все
 
 class CarDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха просмотра деталей по одной машине
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsOwner, )
     serializer_class = CarDetailSerializer
     queryset = Car.objects.all()
 

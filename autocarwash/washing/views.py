@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import permissions, generics
 from .serializers import CreateWashingSerializer
 from car.models import Car, SubscriptionCar
 from rest_framework.views import APIView
@@ -9,14 +9,14 @@ from .permissions import IsOwner
 from rest_framework.authentication import TokenAuthentication
 # Create your views here.
 
-class WashingCreateView(APIView):
+class WashingCreateView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny, )
 
     def post(self, request, *args, **kwargs):
         reg_num = request.data.get('reg_num')
         wash = 1 # пока одна мойка
 
-        if reg_num:
+        if reg_num and len(reg_num)<=9:
             car = Car.objects.filter(reg_num=reg_num)
             if car.exists():
                 data = request.data
@@ -63,17 +63,17 @@ class WashingCreateView(APIView):
             })
 
         else:
-            # нету номера машины
+            # нету номера машины или длина больше
             return Response({
                 "ok": False,
                 'error_code': 404,
-                'description': "We can't see a reg_num"
+                'description': "Wrong reg_num, format А001АА777, max 9 symbols"
             })
 
 
-class WashingDetailView(APIView):
+class WashingDetailView(generics.ListAPIView):
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (IsOwner, )
 
     def get(self, request, *args, **kwargs):
         washing = Washing.objects.filter(car=kwargs['pk'])
