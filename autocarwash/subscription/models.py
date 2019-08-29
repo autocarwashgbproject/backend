@@ -10,7 +10,7 @@ class City(models.Model):
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
-    delete_date = models.DateTimeField(verbose_name='Удален', null=True)
+    delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
 
 
 class Wash(models.Model):
@@ -23,7 +23,7 @@ class Wash(models.Model):
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
-    delete_date = models.DateTimeField(verbose_name='Удален', null=True)
+    delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
 
 
 class Subscription(models.Model):
@@ -36,7 +36,7 @@ class Subscription(models.Model):
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
-    delete_date = models.DateTimeField(verbose_name='Удален', null=True)
+    delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
 
     def subscription_price(): # TODO
         pass
@@ -53,4 +53,4 @@ class Sevice(models.Model):
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
-    delete_date = models.DateTimeField(verbose_name='Удален', null=True)
+    delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)

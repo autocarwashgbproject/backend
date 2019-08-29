@@ -5,5 +5,5 @@ from .views import *
 app_name = 'washing'
 
 urlpatterns = [
-    path('', WashingView.as_view()),
+    path('create/', WashingCreateView.as_view()),
 ]

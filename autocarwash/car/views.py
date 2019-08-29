@@ -8,7 +8,8 @@ from rest_framework.response import Response
 
 
 class CarCreateView(generics.CreateAPIView):  # Вьюха создания машины
-    permission_classes = (IsOwnerOrReadOnly, IsAuthenticated, )
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsOwnerOrReadOnly, )
     serializer_class = CarDetailSerializer
 
 
@@ -19,9 +20,10 @@ class CarListView(generics.ListAPIView):  # Вьюха просмотра все
 
 
 class CarDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха просмотра деталей по одной машине
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsOwnerOrReadOnly, ) # Изменять объект может только пользователь и админ
     serializer_class = CarDetailSerializer
     queryset = Car.objects.all()
-    permission_classes = (IsOwnerOrReadOnly, IsAuthenticated, )  # Изменять объект может только пользователь и админ
 
     def patch(self, request, *args, **kwargs):
         pass

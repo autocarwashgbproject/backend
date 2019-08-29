@@ -3,6 +3,7 @@ import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status, generics
+from .permissions import IsOwnerOrReadOnly
 from .models import User, PhoneOTP
 from car.models import Car
 from .serializers import CreateUserSerializer, UserDetailSerializer
@@ -161,7 +162,7 @@ class ValidateOTP(APIView):
 
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (TokenAuthentication, )
-    permissoin_classes = (permissions.IsAuthenticated, )
+    permissoin_classes = (IsOwnerOrReadOnly, )
     model = User
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
@@ -219,7 +220,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class LogoutView(APIView):
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (IsOwnerOrReadOnly, )
 
     def post(self, request, *args, **kwargs):
         pk = kwargs['pk']

@@ -16,7 +16,7 @@ class Car(models.Model):
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
-    delete_date = models.DateTimeField(verbose_name='Удален', null=True)
+    delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
 
 def sub_date_plus_month(sub_date):
     pass
@@ -33,4 +33,4 @@ class SubscriptionCar(models.Model):
     is_active = models.BooleanField(default=True)
 
     def is_active_sub(car): # TODO проверка на активность подписки
-        return True
+        return False

@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework import permissions
 from .serializers import CreateWashingSerializer
 from car.models import Car, SubscriptionCar
+from rest_framework.views import APIView
 
 # Create your views here.
 
-class WashingCreateView(generics.CreateAPIView):
+class WashingCreateView(APIView):
+    permission_classes = (permissions.AllowAny, )
 
     def post(self, request, *args, **kwargs):
         reg_num = request.data.get('reg_num')
@@ -14,20 +16,23 @@ class WashingCreateView(generics.CreateAPIView):
 
         if reg_num:
             car = Car.objects.filter(reg_num=reg_num)
-            if car.exists()
+            if car.exists():
                 data = request.data
                 data['wash'] = wash
-                car_id = [car.id for car in cars]
-                data['car'] = car_id.first()
+                car_id = [car.id for car in car]
+
+                data['car'] = car_id[0]
 
                 if SubscriptionCar.is_active_sub(car):
-                    data['washing'] = "No subscription"
+                    data['washing'] = "Success"
 
-                    serializer_class = CreateWashingSerializer
+                    serializer = CreateWashingSerializer(data=data)
+                    serializer.is_valid(raise_exception=True)
+                    washing = serializer.save()
+                    washing.save()
 
                     return Response({
-                        "ok": true,
-                        'error_code': 200,
+                        "ok": True,
                         'description': "Washing"
                     })
 
@@ -36,10 +41,13 @@ class WashingCreateView(generics.CreateAPIView):
                     data['is_active'] = False
                     data['washing'] = "No subscription"
 
-                    serializer_class = CreateWashingSerializer
+                    serializer = CreateWashingSerializer(data=data)
+                    serializer.is_valid(raise_exception=True)
+                    washing = serializer.save()
+                    washing.save()
 
                     return Response({
-                    "ok": false,
+                    "ok": False,
                     'error_code': 403,
                     'description': "No subscription"
                 })
@@ -47,16 +55,15 @@ class WashingCreateView(generics.CreateAPIView):
             else:
                 # машина не существует
                 return Response({
-                "ok": false,
+                "ok": False,
                 'error_code': 404,
                 'description': "There is no reg_num in database"
             })
 
         else:
             # нету номера машины
-            serializer_class = CreateWashingSerializer
             return Response({
-                "ok": false,
+                "ok": False,
                 'error_code': 404,
                 'description': "We can't see a reg_num"
             })
