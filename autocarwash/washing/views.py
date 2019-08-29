@@ -5,6 +5,8 @@ from .serializers import CreateWashingSerializer
 from car.models import Car, SubscriptionCar
 from rest_framework.views import APIView
 from .models import Washing
+from .permissions import IsOwner
+from rest_framework.authentication import TokenAuthentication
 # Create your views here.
 
 class WashingCreateView(APIView):
@@ -70,10 +72,11 @@ class WashingCreateView(APIView):
 
 
 class WashingDetailView(APIView):
-    permission_classes = (permissions.AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
         washing = Washing.objects.filter(car=kwargs['pk'])
         serializer = CreateWashingSerializer(washing, many=True)
-        
+
         return Response(serializer.data)

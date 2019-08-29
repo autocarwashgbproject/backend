@@ -1,7 +1,7 @@
 from rest_framework import generics
 from .serializers import CarDetailSerializer, CarListSerializer
 from .models import Car
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwner
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import TokenAuthentication  # Неактивно, так как подключено в настройках
 from rest_framework.response import Response
@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 class CarCreateView(generics.CreateAPIView):  # Вьюха создания машины
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsOwnerOrReadOnly, )
+    permission_classes = (IsAuthenticated, )
     serializer_class = CarDetailSerializer
 
 
@@ -21,7 +21,7 @@ class CarListView(generics.ListAPIView):  # Вьюха просмотра все
 
 class CarDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха просмотра деталей по одной машине
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsOwnerOrReadOnly, ) # Изменять объект может только пользователь и админ
+    permission_classes = (IsAuthenticated, )
     serializer_class = CarDetailSerializer
     queryset = Car.objects.all()
 

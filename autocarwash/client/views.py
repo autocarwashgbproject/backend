@@ -162,7 +162,7 @@ class ValidateOTP(APIView):
 
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (TokenAuthentication, )
-    permissoin_classes = (IsOwnerOrReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, )
     model = User
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
@@ -218,18 +218,16 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
         })
 
 
-class LogoutView(APIView):
+class LogoutView(generics.DestroyAPIView):
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsOwnerOrReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, )
 
-    def post(self, request, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         pk = kwargs['pk']
         user = User.objects.filter(id=pk)
         user = user.first()
         token = Token.objects.filter(user=user)
-        token_first = token.first()
-        token_first.delete()
-
+        token.delete()
 
         return Response({
             'ok': True,
