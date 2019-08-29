@@ -33,4 +33,4 @@ class SubscriptionCar(models.Model):
     is_active = models.BooleanField(default=True)
 
     def is_active_sub(car): # TODO проверка на активность подписки
-        return False
+        return True

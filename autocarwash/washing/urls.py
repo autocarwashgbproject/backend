@@ -6,4 +6,5 @@ app_name = 'washing'
 
 urlpatterns = [
     path('create/', WashingCreateView.as_view()),
+    path('<int:pk>/', WashingDetailView.as_view()),
 ]

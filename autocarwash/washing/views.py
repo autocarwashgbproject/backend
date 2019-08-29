@@ -4,7 +4,7 @@ from rest_framework import permissions
 from .serializers import CreateWashingSerializer
 from car.models import Car, SubscriptionCar
 from rest_framework.views import APIView
-
+from .models import Washing
 # Create your views here.
 
 class WashingCreateView(APIView):
@@ -67,3 +67,13 @@ class WashingCreateView(APIView):
                 'error_code': 404,
                 'description': "We can't see a reg_num"
             })
+
+
+class WashingDetailView(APIView):
+    permission_classes = (permissions.AllowAny, )
+
+    def get(self, request, *args, **kwargs):
+        washing = Washing.objects.filter(car=kwargs['pk'])
+        serializer = CreateWashingSerializer(washing, many=True)
+        
+        return Response(serializer.data)
