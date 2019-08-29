@@ -162,7 +162,7 @@ class ValidateOTP(APIView):
 
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (IsOwner, )
     model = User
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
@@ -220,7 +220,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class LogoutView(generics.DestroyAPIView):
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (IsOwner, )
 
     def destroy(self, request, *args, **kwargs):
         pk = kwargs['pk']
