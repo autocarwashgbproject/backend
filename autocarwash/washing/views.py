@@ -71,7 +71,7 @@ class WashingCreateView(generics.CreateAPIView):
             })
 
 
-class WashingDetailView(generics.ListAPIView):
+class WashingDetailView(generics.GenericAPIView):
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsOwner, )
 
@@ -79,4 +79,7 @@ class WashingDetailView(generics.ListAPIView):
         washing = Washing.objects.filter(car=kwargs['pk'])
         serializer = CreateWashingSerializer(washing, many=True)
 
-        return Response(serializer.data)
+        return Response({
+            "ok": True,
+            "washing": serializer.data
+        })

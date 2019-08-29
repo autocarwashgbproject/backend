@@ -10,7 +10,6 @@ class CreateWashingSerializer(serializers.ModelSerializer):
     def to_representation(self, data):
         instance = super(CreateWashingSerializer, self).to_representation(data)
 
-        instance['ok'] = True
         instance['timestamp'] = User.format_date_to_unix(instance['timestamp'])
 
         return instance

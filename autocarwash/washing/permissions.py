@@ -6,4 +6,11 @@ from rest_framework.authtoken.models import Token
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+        print()
+        print(obj.phone)
+        print(type(obj.phone))
+        print()
+        print(request.user.phone)
+        print(type(request.user.phone))
+        print()
         return bool(obj.phone == request.user.phone)
