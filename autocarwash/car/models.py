@@ -32,5 +32,5 @@ class SubscriptionCar(models.Model):
     subscription_date_validation = models.DateTimeField(default=sub_date_plus_month(subscription_date)) # добавить месяц TODO
     is_active = models.BooleanField(default=True)
 
-    def is_active_sub(): # TODO проверка на активность подписки
-        pass
+    def is_active_sub(car): # TODO проверка на активность подписки
+        return True

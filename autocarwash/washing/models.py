@@ -11,6 +11,6 @@ class Washing(models.Model):
 
     car = models.ForeignKey(Car, verbose_name='Автомобиль', on_delete=models.CASCADE)
     wash = models.ForeignKey(Wash, verbose_name='Автомобиль', on_delete=models.CASCADE)
-    washing = models.CharField(verbose_name='Комментарий к помывке', max_length=150)
+    washing = models.CharField(verbose_name='Комментарий к помывке', max_length=20)
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)

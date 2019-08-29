@@ -35,15 +35,15 @@ class CreateUserSerializer(serializers.ModelSerializer):
         fields = ('phone', 'password')
         extra_kwargs = {'password': {'write_only': True}, }
 
-        def create(self, validated_data):
-            user = User.objects.create(**validated_data)
-            return user
+    def create(self, validated_data):
+        user = User.objects.create(**validated_data)
+        return user
 
-        def to_representation(self, data):
-            instance = super(CreateUserSerializer, self).to_representation(data)
+    def to_representation(self, data):
+        instance = super(CreateUserSerializer, self).to_representation(data)
 
-            instance['phone'] = int(instance['phone'])
-            instance['ok'] = True
+        instance['phone'] = int(instance['phone'])
+        instance['ok'] = True
 
 
-            return instance
+        return instance
