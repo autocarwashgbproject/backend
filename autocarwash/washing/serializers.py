@@ -5,7 +5,7 @@ from client.models import User
 class CreateWashingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Washing
-        fields = "__all__"
+        fields = ("__all__")
 
     def to_representation(self, data):
         instance = super(CreateWashingSerializer, self).to_representation(data)

@@ -18,13 +18,17 @@ class WashingCreateView(APIView):
         pay = request.data.get('pay')
 
         if reg_num and len(reg_num)<=9:
-            car = Car.objects.filter(reg_num=reg_num)
-            if car.exists():
-                data = request.data
-                data['wash'] = wash
-                car_id = [car.id for car in car]
+            cars = Car.objects.filter(reg_num=reg_num)
+            car = cars.first()
+            user = car.user_id
 
-                data['car'] = car_id[0]
+            data = request.data
+            data['user'] = user
+
+            if cars.exists():
+                data['wash'] = wash
+                data['car'] = car.id
+
                 if pay: #TODO (для тестов) SubscriptionCar.is_active_sub(car):
                     # TODO Добавить проверку на помывку на 1 раз в сутки
                     data['washing'] = "Success"
@@ -77,8 +81,8 @@ class WashingDetailView(generics.GenericAPIView):
     permission_classes = (IsOwner, )
 
     def get(self, request, *args, **kwargs):
-
-        washing = Washing.objects.objects.filter(user=kwargs['pk'])
+        pk = kwargs['pk']
+        washing = Washing.objects.filter(user=pk)
 
         serializer = CreateWashingSerializer(washing, many=True)
 
