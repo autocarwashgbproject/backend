@@ -7,7 +7,6 @@ from client.models import User
 
 class IsOwner(permissions.BasePermission):
     def has_permission(self, request, view):
-        # сверяем токен в бд у этого пользователя, с токеном, который пришел
         token = request.headers['Authorization']
         token = split(r' ', token)
         token = token.pop()
@@ -21,6 +20,9 @@ class IsOwner(permissions.BasePermission):
             else:
                 return False
             return True
-            
+
         except Exception as e:
             return False
+
+    def has_object_permission(self, request, view, obj):
+        return bool(obj.phone == request.user.phone)

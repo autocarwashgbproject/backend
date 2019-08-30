@@ -9,12 +9,13 @@ from .permissions import IsOwner
 from rest_framework.authentication import TokenAuthentication
 # Create your views here.
 
-class WashingCreateView(generics.CreateAPIView):
+class WashingCreateView(APIView):
     permission_classes = (permissions.AllowAny, )
 
     def post(self, request, *args, **kwargs):
         reg_num = request.data.get('reg_num')
         wash = 1 # пока одна мойка
+        pay = request.data.get('pay')
 
         if reg_num and len(reg_num)<=9:
             car = Car.objects.filter(reg_num=reg_num)
@@ -24,8 +25,8 @@ class WashingCreateView(generics.CreateAPIView):
                 car_id = [car.id for car in car]
 
                 data['car'] = car_id[0]
-
-                if SubscriptionCar.is_active_sub(car):
+                if pay: #TODO (для тестов) SubscriptionCar.is_active_sub(car):
+                    # TODO Добавить проверку на помывку на 1 раз в сутки
                     data['washing'] = "Success"
 
                     serializer = CreateWashingSerializer(data=data)
@@ -76,10 +77,9 @@ class WashingDetailView(generics.GenericAPIView):
     permission_classes = (IsOwner, )
 
     def get(self, request, *args, **kwargs):
-        washing = Washing.objects.filter(car=kwargs['pk'])
+
+        washing = Washing.objects.objects.filter(user=kwargs['pk'])
+
         serializer = CreateWashingSerializer(washing, many=True)
 
-        return Response({
-            "ok": True,
-            "washing": serializer.data
-        })
+        return Response(serializer.data)
