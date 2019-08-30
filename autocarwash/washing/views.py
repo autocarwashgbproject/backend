@@ -86,4 +86,7 @@ class WashingDetailView(generics.GenericAPIView):
 
         serializer = CreateWashingSerializer(washing, many=True)
 
-        return Response(serializer.data)
+        return Response({
+            "ok":True,
+            "washing": serializer.data
+        })
