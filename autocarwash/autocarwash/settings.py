@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'car',
     'subscription',
     'washing',
+    'payment',
 ]
 
 MIDDLEWARE = [
