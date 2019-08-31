@@ -213,7 +213,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         return Response({
             'ok': True,
-            'id_client': int(kwargs['pk']),
+            'id': int(kwargs['pk']),
             'description': "Client was remove"
         })
 
