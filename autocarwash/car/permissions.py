@@ -24,10 +24,10 @@ class IsOwner(permissions.BasePermission):
                     return True
                 else:
                     return False
-                return True
 
             except Exception as e:
                 return False
+
         else:
             return True
 

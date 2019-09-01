@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.conf import settings
 from subscription.models import Subscription
 
 User = get_user_model()
@@ -20,6 +19,7 @@ class Car(models.Model):
 
 def sub_date_plus_month(sub_date):
     pass
+
 
 class SubscriptionCar(models.Model):
     class Meta:
