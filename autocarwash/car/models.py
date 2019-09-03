@@ -12,6 +12,7 @@ class Car(models.Model):
         verbose_name_plural = "Автомобили"
 
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
+    subscription = models.ForeignKey(Subscription, verbose_name='Тарифный план', on_delete=models.CASCADE)
     reg_num = models.CharField(verbose_name='Номер автомобиля', db_index=True, unique=True, max_length=9)
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
@@ -32,5 +33,5 @@ class SubscriptionCar(models.Model):
     subscription_date_validation = models.DateTimeField(default=sub_date_plus_month(subscription_date=subscription_date))
     is_active = models.BooleanField(default=True)
 
-    def is_active_sub(car): # TODO проверка на активность подписки
-        return True
+    def is_active_sub(self): # TODO проверка на активность подписки
+        return False
