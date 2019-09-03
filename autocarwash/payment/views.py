@@ -1,7 +1,5 @@
 from django.shortcuts import render
 from django.views.generic.edit import CreateView
-from cloudpayments import CloudPayments
-from .passwords_secret import public_id, api_secret
 
 # Create your views here.
 

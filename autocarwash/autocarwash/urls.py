@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/v1/cars/', include('car.urls', namespace='car')),
     path('api/v1/washing/', include('washing.urls', namespace='washing')),
     path('pay/', include('payment.urls', namespace='payment')),
+    path('api/v1/subscription/', include('subscription.urls', namespace='subscription')),
 ]

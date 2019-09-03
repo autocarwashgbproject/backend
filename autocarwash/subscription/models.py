@@ -39,7 +39,8 @@ class Subscription(models.Model):
     delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
 
     def subscription_price(): # TODO
-        pass
+        a = 2000
+        return a
 
 
 class Sevice(models.Model):
