@@ -1,10 +1,8 @@
 from django.urls import path
-from .views import UrlPayCreateView
+from .views import PayCreateView
 
 app_name = 'payment'
 
 urlpatterns = [
-    # register a validate_phone: str
-    path('', UrlPayCreateView.as_view()),
-    path('<int:pk>/', Payment.as_view()),
+    path('', PayCreateView.as_view()), # сразу так сделать, что бы передавать ид машины по которой оплата, а далее мы средиректим на страницу авторизации paymaster по auth доступу
 ]

@@ -231,6 +231,6 @@ class LogoutView(generics.DestroyAPIView):
 
         return Response({
             'ok': True,
-            'id_client': int(user.id),
+            'id': int(user.id),
             'description': "Token was remove"
         })

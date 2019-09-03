@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.views.generic.edit import CreateView
-from rest_framework import generics
+from cloudpayments import CloudPayments
+from .passwords_secret import public_id, api_secret
 
 # Create your views here.
 
-class UrlPayCreateView(generics.CreateAPIView):
+class PayCreateView(CreateView):
+    # https://kassa.yandex.ru/developers/payments/recurring-payments
     pass
 
 
-class Payment(CreateView):
-    pass
+def wait_url(request): # CreateView
+    return render(request, 'payment/index.html')
