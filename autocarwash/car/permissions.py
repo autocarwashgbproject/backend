@@ -19,8 +19,6 @@ class IsOwner(permissions.BasePermission):
                 inside_token = Token.objects.get(user=user)
 
                 if inside_token.key == token:
-                    print('true')
-                    print()
                     return True
                 else:
                     return False
