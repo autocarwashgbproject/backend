@@ -35,7 +35,7 @@ class CarDetailSerializer(serializers.ModelSerializer):  # Добавление 
 
         subscription_date = SubscriptionCar.objects.filter(reg_num = instance['id']).order_by('-subscription_date')
         if subscription_date.exists():
-            last_subscription_date = subscription_date.first().subscription_date
+            last_subscription_date = subscription_date.first().subscription_date # format: 2019-09-04 21:05:51.186224+00:00 TESTS last_subscription_date = dt(2019, 1, 31)
             subscription_date_validation = sub_date_plus_month(datetime=last_subscription_date)
 
             instance['is_subscribe'] = SubscriptionCar.is_subscribe(sub_date_plus_month=subscription_date_validation)

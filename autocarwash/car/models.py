@@ -39,7 +39,7 @@ class SubscriptionCar(models.Model):
     subscription_date = models.DateTimeField(auto_now_add=True)
 
     def is_subscribe(sub_date_plus_month):
-        if dt.now().replace(tzinfo=None) < sub_date_plus_month.replace(tzinfo=None):
+        if dt.now().replace(tzinfo=None) <= sub_date_plus_month.replace(tzinfo=None): # TESTS dt(2019, 1, 31)
             return True
         else:
             return False
