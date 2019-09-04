@@ -21,7 +21,7 @@ class Car(models.Model):
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
     delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
 
-def sub_date_plus_month(datetime): # добавить месяц TODO
+def sub_date_plus_month(datetime):
     month = datetime.month - 1 + 1
     year = datetime.year + month // 12
     month = month % 12 + 1
