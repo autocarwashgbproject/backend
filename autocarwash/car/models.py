@@ -19,8 +19,6 @@ class Car(models.Model):
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
     delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
 
-def sub_date_plus_month(subscription_date): # добавить месяц TODO
-    pass
 
 class SubscriptionCar(models.Model):
     class Meta:
@@ -30,8 +28,12 @@ class SubscriptionCar(models.Model):
     reg_num = models.ForeignKey(Car, verbose_name='Номер автомобиля', on_delete=models.CASCADE)
     subscription = models.ForeignKey(Subscription, verbose_name='Тарифный план', on_delete=models.CASCADE)
     subscription_date = models.DateTimeField(auto_now_add=True)
-    subscription_date_validation = models.DateTimeField(default=sub_date_plus_month(subscription_date=subscription_date))
+    subscription_date_validation = models.DateTimeField(default=sub_date_plus_month(date=subscription_date), null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
-    def is_active_sub(self): # TODO проверка на активность подписки
+    def is_subscribe(self): # TODO проверка на активность подписки
         return False
+
+    def sub_date_plus_month(date): # добавить месяц TODO
+        
+        pass

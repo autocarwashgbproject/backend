@@ -29,7 +29,7 @@ class WashingCreateView(APIView):
                 data['wash'] = wash
                 data['car'] = car.id
 
-                if pay: #TODO (для тестов) SubscriptionCar.is_active_sub(car):
+                if pay: #TODO (для тестов) SubscriptionCar.is_subscribe(car):
                     # TODO Добавить проверку на помывку на 1 раз в сутки
                     data['washing'] = "Success"
 
