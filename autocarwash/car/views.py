@@ -34,6 +34,6 @@ class CarDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха про
 
         return Response({
             'ok': True,
-            'id_car': int(kwargs['pk']),
+            'id': int(kwargs['pk']),
             'description': "Car was remove"
         })

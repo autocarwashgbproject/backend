@@ -113,7 +113,7 @@ class ValidateOTP(APIView):
 
                         return Response({
                             'ok': True,
-                            'id_client': int(user.id),
+                            'id': int(user.id),
                             'is_registered': True,
                             'phone': int(phone),
                             'cars_id': cars_id,
@@ -133,7 +133,7 @@ class ValidateOTP(APIView):
 
                         return Response({
                             'ok': True,
-                            'id_client': int(user.id),
+                            'id': int(user.id),
                             'is_registered': False,
                             'phone': int(phone),
                             'token': token.key
