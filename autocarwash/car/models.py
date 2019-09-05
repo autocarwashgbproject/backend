@@ -22,10 +22,11 @@ class Car(models.Model):
     delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
 
 def sub_date_plus_month(datetime):
-    month = datetime.month - 1 + 1
+    month = datetime.month
     year = datetime.year + month // 12
     month = month % 12 + 1
     day = min(datetime.day, calendar.monthrange(year,month)[1])
+
 
     return dt(year, month, day)
 
@@ -37,6 +38,7 @@ class SubscriptionCar(models.Model):
     reg_num = models.ForeignKey(Car, verbose_name='Номер автомобиля', on_delete=models.CASCADE)
     subscription = models.ForeignKey(Subscription, verbose_name='Тарифный план', on_delete=models.CASCADE)
     subscription_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True) # удалить
 
     def is_subscribe(sub_date_plus_month):
         if dt.now().replace(tzinfo=None) <= sub_date_plus_month.replace(tzinfo=None): # TESTS (преполодим что сейчас): dt(2019, 1, 31) вместо dt.now().replace(tzinfo=None)
