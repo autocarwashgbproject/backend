@@ -25,8 +25,8 @@ class CarDetailSerializer(serializers.ModelSerializer):  # Добавление 
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())  # Прячем пользователя, чтобы не поменяли
 
     class Meta:
-        model = Car
-        fields = ('id', 'reg_num', 'user', 'timestamp', 'update_date')
+        model = Car 
+        fields = ('id', 'reg_num', 'user', 'is_regular_pay', 'timestamp', 'update_date')
 
     def to_representation(self, data):
         instance = super(CarDetailSerializer, self).to_representation(data)

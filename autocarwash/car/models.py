@@ -13,20 +13,20 @@ class Car(models.Model):
         verbose_name = 'Автомобиль'
         verbose_name_plural = "Автомобили"
 
-    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE, related_name="users")
     subscription = models.ForeignKey(Subscription, verbose_name='Тарифный план', on_delete=models.CASCADE, null=True, blank=True)
     reg_num = models.CharField(verbose_name='Номер автомобиля', db_index=True, unique=True, max_length=9)
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     update_date = models.DateTimeField(verbose_name='Обновлен', auto_now=True)
     delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
+    is_regular_pay = models.BooleanField(default=True)
 
 def sub_date_plus_month(datetime):
     month = datetime.month
     year = datetime.year + month // 12
     month = month % 12 + 1
     day = min(datetime.day, calendar.monthrange(year,month)[1])
-
 
     return dt(year, month, day)
 
