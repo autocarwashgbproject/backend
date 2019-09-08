@@ -39,7 +39,7 @@ class Subscription(models.Model):
     delete_date = models.DateTimeField(verbose_name='Удален', null=True, blank=True)
 
     def subscription_price(): # TODO
-        _service = Sevice.objects.all()
+        _service = Sevice.objects.filter(subscription=subscription)
         _totalprice = sum(list(map(lambda x: x.price, _service)))
 
         return _totalprice
