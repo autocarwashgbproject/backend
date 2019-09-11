@@ -50,7 +50,7 @@ class Sevice(models.Model):
         verbose_name = 'Услуга'
         verbose_name_plural = "Услуги"
 
-    subscription = models.ForeignKey(Subscription, verbose_name='Тарифный план', on_delete=models.CASCADE, related_name="subscriptions",)
+    subscription = models.ForeignKey(Subscription, verbose_name='Тарифный план', on_delete=models.CASCADE, related_name="sevices_subscription",)
     sevice = models.CharField(verbose_name='Имя услуги', unique=True, max_length=45)
     price = models.DecimalField(verbose_name='Цена услуги', max_digits=8, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)

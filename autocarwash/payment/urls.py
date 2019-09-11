@@ -1,8 +1,11 @@
-from django.urls import path
-from .views import PayCreateView
+from django.urls import path, re_path
+from django.conf.urls import url
+from .views import PayCreateView, ResultCreateView
 
 app_name = 'payment'
 
 urlpatterns = [
-    path('', PayCreateView.as_view()), # сразу так сделать, что бы передавать ид машины по которой оплата, а далее мы средиректим на страницу авторизации paymaster по auth доступу
+    path('', PayCreateView.as_view()),
+    path('<int:pk>/', ResultCreateView.as_view()),
+    # re_path(r'^token$',ResultCreateView.as_view()),
 ]
