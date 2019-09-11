@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
+from car.models import Car
 
 User = get_user_model()
 
@@ -25,6 +26,11 @@ class UserDetailSerializer(serializers.ModelSerializer):
             instance['timestamp'] = User.format_date_to_unix(instance['timestamp'])
         if instance['update_date']:
             instance['update_date'] = User.format_date_to_unix(instance['update_date'])
+
+        cars = Car.objects.filter(user = instance['id'])
+        if cars.exists():
+            cars_id = [car.id for car in cars]
+            instance['cars_id'] = cars_id
 
         return instance
 

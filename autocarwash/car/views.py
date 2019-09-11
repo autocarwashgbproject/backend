@@ -31,10 +31,9 @@ class CarDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха про
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        print(int(kwargs['pk']))
 
         return Response({
             'ok': True,
-            'id_car': int(kwargs['pk']),
+            'id': int(kwargs['pk']),
             'description': "Car was remove"
         })

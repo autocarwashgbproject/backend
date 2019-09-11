@@ -113,7 +113,7 @@ class ValidateOTP(APIView):
 
                         return Response({
                             'ok': True,
-                            'id_client': int(user.id),
+                            'id': int(user.id),
                             'is_registered': True,
                             'phone': int(phone),
                             'cars_id': cars_id,
@@ -133,7 +133,7 @@ class ValidateOTP(APIView):
 
                         return Response({
                             'ok': True,
-                            'id_client': int(user.id),
+                            'id': int(user.id),
                             'is_registered': False,
                             'phone': int(phone),
                             'token': token.key
@@ -213,7 +213,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         return Response({
             'ok': True,
-            'id_client': int(kwargs['pk']),
+            'id': int(kwargs['pk']),
             'description': "Client was remove"
         })
 
@@ -231,6 +231,6 @@ class LogoutView(generics.DestroyAPIView):
 
         return Response({
             'ok': True,
-            'id_client': int(user.id),
+            'id': int(user.id),
             'description': "Token was remove"
         })

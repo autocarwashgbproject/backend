@@ -86,9 +86,8 @@ class User(AbstractBaseUser):
 
         return int(timestamp)
 
-    # конвертируем дату в формат бд
+    # конвертируем дату в формат ISO 8601
     def format_date_to_base(date):
-        # ISO 8601
         datet = datetime.fromtimestamp(date)
         date = datet.strftime('%Y-%m-%d')
 
