@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import permissions, generics
 from .serializers import CreateWashingSerializer
-from car.models import Car, SubscriptionCar
+from car.models import Car, SubscriptionCar, sub_date_plus_month
 from rest_framework.views import APIView
 from .models import Washing
 from .permissions import IsOwner
@@ -20,6 +20,7 @@ class WashingCreateView(APIView):
         if reg_num and len(reg_num)<=9:
             cars = Car.objects.filter(reg_num=reg_num)
             car = cars.first()
+            car_id = car.id
             user = car.user_id
 
             data = request.data
@@ -27,9 +28,11 @@ class WashingCreateView(APIView):
 
             if cars.exists():
                 data['wash'] = wash
-                data['car'] = car.id
+                data['car'] = car_id
+                subscription_dates = SubscriptionCar.objects.filter(reg_num = car_id).order_by('-subscription_date')
+                subscription_date = subscription_dates.first().subscription_date
 
-                if SubscriptionCar.is_subscribe(car): #TODO (для тестов) pay:
+                if SubscriptionCar.is_subscribe(subscription_date): #TODO (для тестов) pay:
                     # TODO Добавить проверку на помывку на 1 раз в сутки
                     data['washing'] = "Success"
 
