@@ -4,7 +4,7 @@ from client.models import User
 from datetime import datetime as dt
 
 
-class CarListSerializer(serializers.ModelSerializer):  # Список всех машин
+class CarListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
         fields = ('id', 'reg_num', 'user')
@@ -21,12 +21,12 @@ class CarListSerializer(serializers.ModelSerializer):  # Список всех �
         return instance
 
 
-class CarDetailSerializer(serializers.ModelSerializer):  # Добавление машины
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())  # Прячем пользователя, чтобы не поменяли
+class CarDetailSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Car
-        fields = ('id', 'reg_num', 'user', 'timestamp', 'update_date')
+        fields = ('id', 'reg_num', 'user', 'is_regular_pay', 'timestamp', 'update_date')
 
     def to_representation(self, data):
         instance = super(CarDetailSerializer, self).to_representation(data)
