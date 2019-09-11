@@ -7,5 +7,6 @@ app_name = 'payment'
 urlpatterns = [
     path('', PayCreateView.as_view()),
     path('<int:pk>/', ResultCreateView.as_view()),
+    
     # re_path(r'^token$',ResultCreateView.as_view()),
 ]

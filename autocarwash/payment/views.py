@@ -29,6 +29,7 @@ def card_update(user_card, payment):
 
 def order_update(order, payment):
     # сохраняем данные запроса в OrderBankUsers
+    
     order.status = payment.status
     order.is_paid = payment.paid
     order.payment_method_saved = payment.payment_method.saved

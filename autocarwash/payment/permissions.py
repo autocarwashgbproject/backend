@@ -6,7 +6,7 @@ from car.models import Car
 from rest_framework.response import Response
 
 
-class IsOwner(permissions.BasePermission):
+class IsOwner(permissions.BasePermission)
     def has_permission(self, request, view):
         try:
             token = request.headers['Authorization']

@@ -6,7 +6,6 @@ from subscription.models import Subscription
 User = get_user_model()
 
 # Create your models here.
-
 class CardBankUsers(models.Model):
     timestamp = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     payment_id = models.CharField(verbose_name='id оплаты', db_index=True, unique=True, max_length=50, blank=True, null=True)
