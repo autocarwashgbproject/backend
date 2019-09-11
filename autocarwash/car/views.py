@@ -16,7 +16,7 @@ class CarCreateView(generics.CreateAPIView):  # Вьюха создания ма
 class CarListView(generics.ListAPIView):  # Вьюха просмотра всех машин
     serializer_class = CarListSerializer
     queryset = Car.objects.all()  # какие записи вынуть из БД
-    permission_classes = (IsAdminUser, )  # Просмотр доступен только если авторизован
+    permission_classes = (IsAdminUser, )  # Просмотр доступен только если админ
 
 
 class CarDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха просмотра деталей по одной машине

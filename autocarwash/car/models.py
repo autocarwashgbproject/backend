@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.conf import settings
 from subscription.models import Subscription
 from datetime import datetime as dt
 import calendar
@@ -12,8 +11,13 @@ class Car(models.Model):
     class Meta:
         verbose_name = 'Автомобиль'
         verbose_name_plural = "Автомобили"
+        
+    # car_num_regex = RegexValidator(
+    #     regex=r'^[АВЕКМНОРСТУХ]\d{3}[АВЕКМНОРСТУХ]\d{2,3}$',
+    #     message='Неверный формат номера автомобиля'
+    # )
 
-    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE, related_name="users")
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
     subscription = models.ForeignKey(Subscription, verbose_name='Тарифный план', on_delete=models.CASCADE, null=True, blank=True)
     reg_num = models.CharField(verbose_name='Номер автомобиля', db_index=True, unique=True, max_length=9)
     is_active = models.BooleanField(default=True)
@@ -29,6 +33,7 @@ def sub_date_plus_month(datetime):
     day = min(datetime.day, calendar.monthrange(year,month)[1])
 
     return dt(year, month, day)
+
 
 class SubscriptionCar(models.Model):
     class Meta:
