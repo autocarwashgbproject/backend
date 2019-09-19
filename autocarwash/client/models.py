@@ -11,7 +11,6 @@ import os
 import requests
 from datetime import datetime
 
-
 # User.object.create_user(phone='123123123123', password='123hjk8gcn')
 class UserManager(BaseUserManager):
     def create_user(self, phone, password=None, is_staff=False, is_active=True, is_admin=False):
@@ -53,7 +52,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     phone_regex = RegexValidator(
-        regex=r'^\+?1?\d{9,14}$', # TODO
+        regex=r'^\+?1?\d{10}$',
         message='Номер телефона необходимо вводить в формате: «+79031234567». Допускается до 14 цифр.'
     )
     phone = models.CharField(validators=[phone_regex], max_length=15, unique=True)
