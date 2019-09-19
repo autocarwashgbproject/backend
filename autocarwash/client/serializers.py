@@ -32,6 +32,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
         if cars.exists():
             cars_id = [car.id for car in cars]
             instance['cars_id'] = cars_id
+        else:
+            instance['cars_id'] = list()
 
         bankusers = BankUsers.objects.filter(user = instance['id'])
         if bankusers.exists():
