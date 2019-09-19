@@ -29,16 +29,18 @@ class UserDetailSerializer(serializers.ModelSerializer):
             instance['update_date'] = User.format_date_to_unix(instance['update_date'])
 
         cars = Car.objects.filter(user = instance['id'])
+        cars_id = list()
         if cars.exists():
             cars_id = [car.id for car in cars]
-            instance['cars_id'] = cars_id
-        else:
-            instance['cars_id'] = list()
+
+        instance['cars_id'] = cars_id
 
         bankusers = BankUsers.objects.filter(user = instance['id'])
+        bankusers_id = list()
         if bankusers.exists():
             bankusers_id = [bankusers.id for bankuser in bankusers]
-            instance['user_card_id'] = bankusers_id
+
+        instance['user_card_id'] = bankusers_id
 
         return instance
 
