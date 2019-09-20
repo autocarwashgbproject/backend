@@ -12,7 +12,7 @@ class CardBankUsers(models.Model):
     last4 = models.CharField(verbose_name='Последние 4 цифры карты', max_length=4, blank=True, null=True)
     card_type = models.CharField(verbose_name='Тип платежной системы', max_length=25, blank=True, null=True)
     bank = models.CharField(verbose_name='Банк', max_length=75, blank=True, null=True)
-
+    payment_method_saved = models.BooleanField(default=False)
 
 class BankUsers(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
@@ -29,8 +29,8 @@ class OrderBankUsers(models.Model):
     update = models.DateTimeField(verbose_name='Изменили', auto_now=True, blank=True, null=True)
     is_regular_pay = models.BooleanField(default=False)
     is_paid = models.BooleanField(default=False)
-    error = models.CharField(verbose_name='Ошибка', max_length=15, blank=True, null=True)
-    error_description = models.CharField(verbose_name='Описание ошибок', max_length=15, blank=True, null=True)
+    error = models.CharField(verbose_name='Ошибка', max_length=35, blank=True, null=True)
+    error_description = models.CharField(verbose_name='Описание ошибок', max_length=80, blank=True, null=True)
     payment_method_saved = models.BooleanField(default=False)
     recipient_account_id = models.CharField(verbose_name='account_id', max_length=15, blank=True, null=True)
     recipient_gateway_id = models.CharField(verbose_name='gateway_id', max_length=15, blank=True, null=True)

@@ -21,8 +21,8 @@ from .serializers import ViewPaymentSerializer, ViewCardsSerializer
 
 
 class PaymentDetailView(generics.GenericAPIView):
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsOwner, )
+    # authentication_classes = (TokenAuthentication, )
+    permission_classes = (AllowAny, ) # IsOwner
 
     def get(self, request, *args, **kwargs):
         pk = kwargs['pk']
@@ -39,8 +39,8 @@ class PaymentDetailView(generics.GenericAPIView):
         })
 
 class CardsDetailView(generics.GenericAPIView):
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsOwner, )
+    # authentication_classes = (TokenAuthentication, )
+    permission_classes = (AllowAny, ) # IsOwner
 
     def get(self, request, *args, **kwargs):
         pk = kwargs['pk']
@@ -63,6 +63,7 @@ def card_update(user_card, payment):
     user_card.card_type = payment.payment_method.card.card_type
     user_card.last4 = payment.payment_method.card.last4
     user_card.payment_id = payment.id
+    user_card.payment_method_saved = payment.payment_method.saved
     user_card.save()
 
 
@@ -75,9 +76,15 @@ def order_update(order, payment):
     order.recipient_account_id = payment.recipient.account_id
     order.refundable = payment.refundable
     order.created_at = payment.created_at
+    try:
+        order.error = payment.cancellation_details.payment_network
+        order.error_description = payment.cancellation_details.payment_method_restricted
+    except Exception as e:
+        pass
+
     # TODO
-    # error = models.CharField(verbose_name='Ошибка', max_length=10, blank=True, null=True)?
-    # error_description = models.CharField(verbose_name='Описание ошибок', max_length=15, blank=True, null=True)?
+    # error = models.CharField(verbose_name='Ошибка', max_length=10, blank=True, null=True)
+    # error_description = models.CharField(verbose_name='Описание ошибок', max_length=15, blank=True, null=True)
     order.save()
 
 
@@ -91,8 +98,36 @@ class PayCreateView(APIView):
         user_card_id = request.data.get('user_card_id')
         subscription = Subscription.objects.get(id=1) # пока только 1 подписка TODO
 
-        if car_id and isinstance(is_regular_pay, bool) and user_card_id:
+        if car_id and isinstance(is_regular_pay, bool):
             car = Car.objects.get(id=car_id)
+            if user_card_id == None:
+                user = car.user
+                bank_users = BankUsers.objects.filter(user=user)
+                if bank_users.exists():
+                    user_card = list()
+                    for i in bank_users:
+                        user_card.append(i.id)
+
+                    return Response({
+                        'ok': False,
+                        'error': 452,
+                        'error_description': "No user_card_id",
+                        'car_id': car_id,
+                        'is_regular_pay': is_regular_pay,
+                        'user_card_id': user_card
+                    })
+                else:
+                    user_card = CardBankUsers.objects.create()
+                    BankUsers.objects.create(user=user, card_bank_users=user_card)
+
+                    return Response({
+                        'ok': False,
+                        'error': 404,
+                        'error_description': "user_card_id was created",
+                        'car_id': car_id,
+                        'is_regular_pay': is_regular_pay,
+                        'user_card_id': user_card.id
+                    })
 
             if is_regular_pay:
                 car.is_regular_pay = is_regular_pay
@@ -113,13 +148,12 @@ class PayCreateView(APIView):
                     'description': "Arleady subscribe"
                 })
             else:
-                #
                 value = subscription.subscription_price()
                 user_card = CardBankUsers.objects.filter(id=user_card_id).order_by('-timestamp')
+                user_card = user_card.first()
+                order = OrderBankUsers.objects.create(card_bank_users=user_card, car=car, is_regular_pay=is_regular_pay, subscription=subscription)
 
-                if user_card.exists() and user_card.first().payment_id:
-                    user_card = user_card.first()
-                    order = OrderBankUsers.objects.create(card_bank_users=user_card, car=car, is_regular_pay=is_regular_pay, subscription=subscription)
+                if user_card.payment_method_saved:
                     payment_id = user_card.payment_id
                     yandex_pay = YandexPay(payment_id=payment_id)
                     payment = yandex_pay.pay_with_payment_id(order=order, value=value)
@@ -127,13 +161,11 @@ class PayCreateView(APIView):
                     user_card.payment_id = payment.payment_method.id
                     user_card.save()
                     check_pay = yandex_pay.check_pay(payment_id=user_card.payment_id)
-                    print()
-                    print(check_pay)
-                    print()
                     order_update(order=order, payment=check_pay)
                     card_update(user_card=user_card, payment=check_pay)
-                    if check_pay:
-                        SubscriptionCar.objects.create(reg_num=car_id, subscription=subscription)
+                    if check_pay.paid:
+                        car = Car.objects.get(id=car_id)
+                        SubscriptionCar.objects.create(reg_num=car, subscription=subscription)
                         return Response({
                             'ok': True,
                             'pay': True,
@@ -147,23 +179,15 @@ class PayCreateView(APIView):
                         })
                         #
                 else:
-                    if user_card.exists():
-                        user_card = user_card.first()
-                    else:
-                        user_card = CardBankUsers.objects.create()
-                    bank_user = BankUsers.objects.create(user=car.user, card_bank_users=user_card)
-                    order = OrderBankUsers.objects.create(card_bank_users=user_card, car=car, is_regular_pay=is_regular_pay, subscription=subscription)
                     yandex_pay = YandexPay()
                     payment = yandex_pay.pay_without_payment_id(order=order, value=value)
-                    print()
-                    print(f'payment: {payment}')
-                    print()
                     order_update(order=order, payment=payment)
                     user_card.payment_id = payment.payment_method.id
                     user_card.save()
-                    print()
-                    print(f'payment.confirmation.confirmation_url: {payment.confirmation.confirmation_url}')
-                    print()
+
+                    # TODO если человек не нажмет после яндекс оплаты вернутся в магазин, то оплату не проверим,
+                    # соответственно не будет подписки у клиента и оплаты проверенной, в связи с этим надо запускать ResultCreateView
+                    # самостоятельно по опредленным ид, которые в течении последних 5 минут запросили оплату, запускать каждые 3 минуты (то есть по всем новым OrderBankUsers)
 
                     return Response({
                         'ok': True,
@@ -184,20 +208,34 @@ class ResultCreateView(View):
     def get(self, request, *args, **kwargs):
         order_id = kwargs['pk']
         order = OrderBankUsers.objects.get(id=order_id)
-        payment_id = order.card_bank_users.payment_id
-        yandex_pay = YandexPay()
-        check_pay = yandex_pay.check_pay(payment_id=payment_id)
-        order_update(order=order, payment=check_pay)
-        card_update(user_card=order.card_bank_users, payment=check_pay)
-        if check_pay:
-            SubscriptionCar.objects.create(reg_num=order.car, subscription=order.subscription)
+        if order.is_paid:
             context = {
                 'pay': "Оплачено"
             }
         else:
-            context = {
-                'pay': "Не олачено"
-            }
+            payment_id = order.card_bank_users.payment_id
+            yandex_pay = YandexPay()
+            check_pay = yandex_pay.check_pay(payment_id=payment_id)
+            if check_pay == False:
+                context = {
+                    'pay': f"Вы еще не провели оплату, вернутся на страницу оплаты: https://money.yandex.ru/payments/external/confirmation?orderId={order.card_bank_users.payment_id}"
+                }
+                return render(request, 'payment/index.html', context)
+            print()
+            for key, val in check_pay:
+                print(f"{key}: {val}")
+            print()
+            order_update(order=order, payment=check_pay)
+            card_update(user_card=order.card_bank_users, payment=check_pay)
+            if check_pay.paid:
+                SubscriptionCar.objects.create(reg_num=order.car, subscription=order.subscription)
+                context = {
+                    'pay': "Оплачено"
+                }
+            else:
+                context = {
+                    'pay': "Не олачено"
+                }
 
         return render(request, 'payment/index.html', context)
 
@@ -216,35 +254,20 @@ class YandexPay():
         self.settings = Settings.get_account_settings()
 
     def pay_with_payment_id(self, order, value):
-        print()
-        print(self.payment_id)
-        print()
-        print(f"value: {value}")
-        print()
-        print(f"order.id: {order.id}")
-        print()
         payment = Payment.create({
             "amount": {
                 "value": value,
                 "currency": "RUB"
             },
             "description": f"Заказ {order.id}",
-            "payment_method_id": f"<{self.payment_id}>"
+            "payment_method_id": self.payment_id
 
-        })
+        }, str(uuid.uuid4()))
 
         return payment
 
     def pay_without_payment_id(self, order, value):
-        # если нету payment_id в бд, то надо пройти на сайт яндекса, что бы сделать payment_id активным
         return_url = f"{self.site_url}pay/{order.id}/"
-        print()
-        print(f"return_url: {return_url}")
-        print()
-        print(f"value: {value}")
-        print()
-        print(f"order.id: {order.id}")
-        print()
 
         payment = Payment.create({
             "amount": {

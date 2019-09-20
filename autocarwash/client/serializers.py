@@ -39,6 +39,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
         bankusers_id = ['',]
         if bankusers.exists():
             bankusers_id = [bankusers.id for bankuser in bankusers]
+            print(bankusers_id)
 
         instance['user_card_id'] = bankusers_id
 
