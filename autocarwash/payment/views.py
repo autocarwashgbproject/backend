@@ -45,7 +45,7 @@ class CardsDetailView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         pk = kwargs['pk']
         bankusers = BankUsers.objects.filter(user=pk)
-        data = {}
+        data = list()
         for i in bankusers:
             cardbankusers = CardBankUsers.objects.filter(id=i.id)
             serializer = ViewCardsSerializer(cardbankusers, many=True)
