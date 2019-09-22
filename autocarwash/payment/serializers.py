@@ -18,7 +18,7 @@ class ViewPaymentSerializer(serializers.ModelSerializer):
 class ViewCardsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CardBankUsers
-        fields = ('timestamp', 'last4', 'card_type', 'bank')
+        fields = ('id', 'timestamp', 'last4', 'card_type', 'bank')
 
     def to_representation(self, data):
         instance = super(ViewCardsSerializer, self).to_representation(data)
