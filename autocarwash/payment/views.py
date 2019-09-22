@@ -27,11 +27,11 @@ class PaymentDetailView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         pk = kwargs['pk']
         bankusers = BankUsers.objects.filter(user=pk)
-        data = {}
+        data = list()
         for i in bankusers:
             orderbankusers = OrderBankUsers.objects.filter(card_bank_users=i.id)
             serializer = ViewPaymentSerializer(orderbankusers, many=True)
-            data[i.id] = serializer.data
+            data.append(serializer.data)
 
         return Response({
             "ok":True,
@@ -49,7 +49,7 @@ class CardsDetailView(generics.GenericAPIView):
         for i in bankusers:
             cardbankusers = CardBankUsers.objects.filter(id=i.id)
             serializer = ViewCardsSerializer(cardbankusers, many=True)
-            data[i.id] = serializer.data
+            data.append(serializer.data)
 
         return Response({
             "ok":True,
