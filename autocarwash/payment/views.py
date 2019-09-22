@@ -126,7 +126,7 @@ class PayCreateView(APIView):
                         'error_description': "user_card_id was created",
                         'car_id': car_id,
                         'is_regular_pay': is_regular_pay,
-                        'user_card_id': user_card.id
+                        'user_card_id': [user_card.id]
                     })
 
             if is_regular_pay:
@@ -177,7 +177,6 @@ class PayCreateView(APIView):
                             'pay': False,
                             'description': "Не олачено"
                         })
-                        #
                 else:
                     yandex_pay = YandexPay()
                     payment = yandex_pay.pay_without_payment_id(order=order, value=value)
