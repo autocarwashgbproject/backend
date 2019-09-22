@@ -38,7 +38,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
         bankusers = BankUsers.objects.filter(user = instance['id'])
         bankusers_id = []
         if bankusers.exists():
-            bankusers_id = [bankusers.id for bankuser in bankusers]
+            bankusers_id = [bankuser.id for bankuser in bankusers]
             print(bankusers_id)
 
         instance['user_card_id'] = bankusers_id
