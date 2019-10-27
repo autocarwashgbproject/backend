@@ -1,8 +1,9 @@
-from rest_framework import permissions
 from re import split
+
+from rest_framework import permissions
 from rest_framework.authtoken.models import Token
+
 from client.models import User
-# from .models import
 
 
 class IsOwner(permissions.BasePermission):
@@ -14,13 +15,11 @@ class IsOwner(permissions.BasePermission):
         try:
             user = User.objects.get(id=pk)
             inside_token = Token.objects.get(user=user)
-
             if inside_token.key == token:
                 return True
             else:
                 return False
             return True
-
         except Exception as e:
             return False
 
