@@ -46,27 +46,27 @@ class ValidatePhoneSendOTP(APIView):
                     old.save()
                     return Response({
                         'ok': True,
-                        'phone': int(phone),
+                        'phone': phone,
                         'sms_for_tests': int(key)
                     })
                 else:
                     PhoneOTP.objects.create(phone=phone, otp=key, )
                     return Response({
                         'ok': True,
-                        'phone': int(phone),
+                        'phone': phone,
                         'sms_for_tests': int(key)
                     })
             else:
                 return Response({
                     'ok': False,
                     'error_code': 404,
-                    'description': "We can't see a phone"
+                    'description': "We can't see phone"
                 })
         else:
             return Response({
                 'ok': False,
                 'error_code': 404,
-                'description': "We can't see a phone"
+                'description': "We can't see phone"
             })
 
 
@@ -115,13 +115,13 @@ class ValidateOTP(APIView):
                             'ok': True,
                             'id': int(user.id),
                             'is_registered': True,
-                            'phone': int(phone),
+                            'phone': phone,
                             'cars_id': cars_id,
                             'token': token.key
                         })
                     else:
                         temp_data = {
-                            'phone': int(phone),
+                            'phone': phone,
                             'password': password
                         }
                         serializer = CreateUserSerializer(data=temp_data)
@@ -135,7 +135,7 @@ class ValidateOTP(APIView):
                             'ok': True,
                             'id': int(user.id),
                             'is_registered': False,
-                            'phone': int(phone),
+                            'phone': phone,
                             'token': token.key
                         })
                 else:

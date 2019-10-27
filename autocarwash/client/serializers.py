@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from car.models import Car
+from payment.models import BankUsers
 
 User = get_user_model()
 
@@ -15,7 +16,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, data):
         instance = super(UserDetailSerializer, self).to_representation(data)
 
-        instance['phone'] = int(instance['phone'])
+        instance['phone'] = instance['phone']
         instance['ok'] = True
         if instance['birthday']:
             instance['birthday'] = User.format_date_to_unix(instance['birthday'])
@@ -28,9 +29,19 @@ class UserDetailSerializer(serializers.ModelSerializer):
             instance['update_date'] = User.format_date_to_unix(instance['update_date'])
 
         cars = Car.objects.filter(user = instance['id'])
+        cars_id = []
         if cars.exists():
             cars_id = [car.id for car in cars]
-            instance['cars_id'] = cars_id
+
+        instance['cars_id'] = cars_id
+
+        bankusers = BankUsers.objects.filter(user = instance['id'])
+        bankusers_id = []
+        if bankusers.exists():
+            bankusers_id = [bankuser.id for bankuser in bankusers]
+            print(bankusers_id)
+
+        instance['user_card_id'] = bankusers_id
 
         return instance
 
@@ -48,7 +59,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
     def to_representation(self, data):
         instance = super(CreateUserSerializer, self).to_representation(data)
 
-        instance['phone'] = int(instance['phone'])
+        instance['phone'] = instance['phone']
         instance['ok'] = True
 
 
