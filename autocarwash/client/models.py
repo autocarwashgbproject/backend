@@ -52,7 +52,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     phone_regex = RegexValidator(
         regex=r'^\+?1?\d{10}$',
-        message='Номер телефона необходимо вводить в формате: '+\
+        message='Номер телефона необходимо вводить в формате: '+ \
             '«79031234567». Допускается до 14 цифр.'
         )
     phone = models.CharField(
@@ -132,7 +132,7 @@ class User(AbstractBaseUser):
 class PhoneOTP(models.Model):
     phone_regex = RegexValidator(
         regex=r'^\+?1?\d{9,14}$',
-        message='Номер телефона необходимо вводить в формате: '+\
+        message='Номер телефона необходимо вводить в формате: '+ \
             '«79031234567». Допускается до 14 цифр.'
         )
     phone = models.CharField(

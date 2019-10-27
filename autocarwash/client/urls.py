@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ValidatePhoneSendOTP, ValidateOTP, ClientDetailView + \
+from .views import ValidatePhoneSendOTP, ValidateOTP, ClientDetailView, \
     LogoutView
 
 
