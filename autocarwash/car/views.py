@@ -1,25 +1,26 @@
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.response import Response
+
 from .serializers import CarDetailSerializer, CarListSerializer
 from .models import Car
 from .permissions import IsOwner
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
-from rest_framework.authentication import TokenAuthentication  # Неактивно, так как подключено в настройках
-from rest_framework.response import Response
 
 
-class CarCreateView(generics.CreateAPIView):  # Вьюха создания машины
+class CarCreateView(generics.CreateAPIView):
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsOwner, )
     serializer_class = CarDetailSerializer
 
 
-class CarListView(generics.ListAPIView):  # Вьюха просмотра всех машин
+class CarListView(generics.ListAPIView):
     serializer_class = CarListSerializer
-    queryset = Car.objects.all()  # какие записи вынуть из БД
-    permission_classes = (IsAdminUser, )  # Просмотр доступен только если авторизован
+    queryset = Car.objects.all()
+    permission_classes = (IsAdminUser, )
 
 
-class CarDetailView(generics.RetrieveUpdateDestroyAPIView):  # Вьюха просмотра деталей по одной машине
+class CarDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsOwner, )
     serializer_class = CarDetailSerializer
