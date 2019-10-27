@@ -2,7 +2,7 @@ import random
 
 import requests
 
-# from django.shortcuts import get_object_or_404 # think about it
+# from django.shortcuts import get_object_or_404 # think about it # TODO
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, generics
