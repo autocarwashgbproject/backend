@@ -25,7 +25,8 @@ class UserAdmin(BaseUserAdmin):
         ('Permissions', {'fields': ('admin', 'staff', 'active')})
     )
     # add_fieldsets не является стандартным атрибутом ModelAdmin.
-    # UserAdmin переопределяет get_fieldsets, чтобы использовать этот атрибут при создании пользователя.
+    # UserAdmin переопределяет get_fieldsets, чтобы использовать этот
+    # атрибут при создании пользователя.
     add_fieldsets = (
         (None, {
             'classes': ('wide',),

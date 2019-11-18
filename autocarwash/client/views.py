@@ -1,18 +1,18 @@
-from django.shortcuts import render, get_object_or_404
+import random
+
 import requests
+
+# from django.shortcuts import get_object_or_404 # think about it # TODO
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions, status, generics
+from rest_framework import permissions, generics
 from .permissions import IsOwner
 from .models import User, PhoneOTP
 from car.models import Car
 from .serializers import CreateUserSerializer, UserDetailSerializer
-import random
-from django.contrib.auth import login
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken import serializers
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.mixins import DestroyModelMixin
 
 
 class ValidatePhoneSendOTP(APIView):
@@ -39,7 +39,8 @@ class ValidatePhoneSendOTP(APIView):
                         return Response({
                             'ok': False,
                             'error_code': 403,
-                            'description': "It's too many attempts, connect with support"
+                            'description': "It's too many attempts," + \
+                                "connect with support"
                         })
                     old.count = count + 1
                     old.otp = key
@@ -80,8 +81,12 @@ def send_otp(phone):
 
 class ValidateOTP(APIView):
     """
-    Если вы получили проверочный код (otp), отправьте запрос по телефону, и вы будете перенаправлены для ввода пароля
+    Если вы получили проверочный код (otp), отправьте запрос по телефону,
+    и вы будете перенаправлены для ввода пароля
+
     """
+
+
     permission_classes = (permissions.AllowAny, )
 
     def post(self, request, *args, **kwargs):
@@ -103,7 +108,9 @@ class ValidateOTP(APIView):
                             'username': phone,
                             'password': password
                         }
-                        serializer = serializers.AuthTokenSerializer(data=temp_data)
+                        serializer = serializers.AuthTokenSerializer(
+                            data=temp_data
+                            )
                         serializer.is_valid(raise_exception=True)
                         user = serializer.validated_data['user']
                         token, created = Token.objects.get_or_create(user=user)
@@ -179,7 +186,9 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         if client['is_birthday'] == True:
             try:
-                client['birthday'] = User.format_date_to_base(date = client['birthday'])
+                client['birthday'] = User.format_date_to_base(
+                date = client['birthday']
+                )
             except Exception as e:
                 return Response({
                     'ok': False,

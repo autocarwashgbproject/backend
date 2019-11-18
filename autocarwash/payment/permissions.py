@@ -1,11 +1,13 @@
-from rest_framework import permissions
 from re import split
+
+from rest_framework import permissions
+from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+
 from client.models import User
 from car.models import Car
-from rest_framework.response import Response
 
-# отредактировать TODO
+
 class IsOwner(permissions.BasePermission):
     def has_permission(self, request, view):
         try:
